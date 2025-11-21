@@ -1,0 +1,71 @@
+:root{
+    --bg: #f6f8fb;
+    --card: #ffffff;
+    --accent: #2563eb;
+    --text: #0f172a;
+    --muted: #475569;
+    --radius: 10px;
+    --max-width: 1000px;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color:var(--text);
+    background:var(--bg);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height:1.5;
+}
+
+.container{
+    width:90%;
+    max-width:var(--max-width);
+    margin:0 auto;
+}
+
+/* Header */
+.site-header{
+    background:linear-gradient(90deg, rgba(255,255,255,0.6), rgba(255,255,255,0.4));
+    backdrop-filter: blur(4px);
+    border-bottom:1px solid rgba(15,23,42,0.06);
+}
+.site-header .container{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 0;
+}
+.logo{margin:0;font-size:1.125rem;font-weight:700}
+.nav a{
+    margin-left:16px;
+    text-decoration:none;
+    color:var(--muted);
+}
+.nav a:hover{color:var(--accent)}
+
+/* Hero */
+.hero{
+    padding:64px 0;
+    text-align:center;
+    background:
+      radial-gradient(circle at 10% 10%, rgba(37,99,235,0.06), transparent 10%),
+      radial-gradient(circle at 90% 90%, rgba(37,99,235,0.04), transparent 15%);
+}
+.hero h2{margin:0 0 8px;font-size:2rem}
+.hero p{margin:0 0 20px;color:var(--muted)}
+
+.btn{
+    display:inline-block;
+    background:var(--accent);
+    color:white;
+    padding:10px 16px;
+    border-radius:8px;
+    text-decoration:none;
+    border:none;
+    cursor:pointer;
+    font-weight:600;
+}
+.btn:hover{opacity:0.95}
