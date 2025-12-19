@@ -1,0 +1,49 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border-radius: 0;
+    font-family: sans-serif, Arial, Helvetica;
+}
+body{
+    margin-top: 100px;
+    display: flex;
+    justify-content: center;
+}
+.cont{
+    width: 400px;
+    height: 100px;
+    position: relative;
+}
+.box{
+    width: 100px;
+    height: 100px;
+    left: 0;
+    background-color: red;
+    position: absolute;
+    animation: move 2s ease-in-out infinite alternate;
+}
+@keyframes move {
+    0% {
+        transform: translateX(0px);
+    }
+    100% {
+        transform: translateX(100px);
+    }
+}
+.box-2{
+    width: 100px;
+    height: 100px;
+    background-color: blue;
+    position: absolute;
+    right: 0;
+    animation: move_2 2s ease-in-out infinite alternate;
+}
+@keyframes move_2 {
+    0% {
+        transform: translateX(0px);
+    }
+    100% {
+        transform: translateX(-100px);
+    }
+}
