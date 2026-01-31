@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Script Quiz</title>
+    <link rel="shortcut icon" href="download.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Quiz of Pak History</h1>
+    <h3>When was Pakistan created? (1945, 1946, 1957, 1947)</h3>
+    <input type="text" id="answer1" class="btun">
+
+    <h3>When was Internet created? (1962, 1983, 1993, 1974)</h3>
+    <input type="text" id="answer2" class="btun">
+    <input type="button" value="submit" onclick="checkAnswers()">
+
+    <script>
+        // let fruits = ["Apple", "Cherry", "Banana"];
+        // console.log(fruits + " " + "Wanna eat");
+        // These will run as they are valid / given index
+        // console.log(fruits[0]);
+        // console.log(fruits[1]);
+        // console.log(fruits[2]);
+        // This will give undefined as there is no 4th element
+        // console.log(fruits[3]);
+
+        // Making a table of 2
+        // let table = [prompt("Enter a number")];
+
+        // for(i = 1; i <= 10;i++){
+        //     console.log(table + "x" + i + "=" + table*i);
+        // }
+
+        // let colors
+        // let color = prompt("Enter your favorite color: Red, Blue, Yellow, Pink");
+
+        // if(color == "Red"){
+        //     alert("So you like red");
+        // }
+        // else if(color == "Blue"){
+        //     alert("So u like blue");
+        // }
+        // else if(color == "Yellow"){
+        //     alert("So u like yellow");
+        // }
+        // else if(color == "Pink"){
+        //     alert("So u like pink");
+        // }
+        // else{
+        //     alert("Undefined color");
+        // }
+
+        // Quiz in Java script
+        // let correct2 = "1983";
+        // let correct = "1947";
+
+        let correctAnswers = [1947, 1983];
+        let score = 0;
+
+
+        function checkAnswers(){
+            let answer = document.getElementById("answer1").value;
+            let answer2 = document.getElementById("answer2").value;
+
+            if(answer == correctAnswers[0]){
+                alert("Correct 1");
+                score++;
+            }
+            if(answer2 == correctAnswers[1]){
+                alert("Correct 2");
+                score++;
+            }
+            else{
+                alert("Are you Dumb?"); 
+            }
+            alert("Your score is: " + score);
+        }
+        // function checkAnswers(){
+        //     let answer2 = document.getElementById("answer2").value;
+        //     if(answer2 == correctAnswers[1]){
+        //         alert("Correct");
+                
+        //     }
+        //     else{
+        //         alert("Are you Dumb?");
+        //     }
+        // }
+         
+        
+    </script>
+</body>
+</html>
