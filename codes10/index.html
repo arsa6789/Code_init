@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function calculator(){
+        const num1_ = prompt("Enter a number");
+        const operator = prompt("Enter operator +, -, *, /");
+        const num2_ = prompt("Enter second number");
+        const num1 = parseFloat(num1_);
+        const num2 = parseFloat(num2_);
+
+        if(num1 === isNaN && num2 === isNaN){
+            alert("Enter a fuckin number!!!!");
+        }
+        else{
+            alert("checking calculator.com");
+            alert("checking google.com");
+            alert("calling sigma boys");
+            alert("calling nasa");
+            alert("Coding the whole thing");
+            alert("Wait...");
+        }
+
+        switch(operator){
+            case "+":
+                alert((num1) + (num2));
+                break;
+
+            case "-":
+                alert(num1 - num2)
+                break;
+            case "*":
+                alert(num1 * num2);
+                break;
+
+            case "/":
+                if(num1 || num2 !== 0){
+                    alert(num1/num2);
+                    break;
+                }
+                else{
+                    alert("Enter a number greater than 0");
+                    break;
+                }
+            default:
+                alert("Calculator")
+                break;
+        }
+    }
+        calculator();
+    </script>
+</body>
+</html>
