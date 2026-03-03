@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'DM Sans', monospace;
+}
+/* Hero section */
+.acad_details{
+    background: linear-gradient(90deg,rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 65%);
+    padding: 5em;
+}
+.acad_details > h1{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+.acad_details > p{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+/* Our Services card */
+#card{
+    display: flex;
+    border: 2px solid black;
+    margin-top: 2em;
+    margin-left: 3em;
+    width: 90vw; 
+    border-radius: 30px;
+}
+#card:hover{
+    -webkit-box-shadow: 5px 5px 15px 5px #000000; 
+    box-shadow: 5px 5px 15px 5px rgba(87, 199, 133, 1);
+    transition: 0.5s ease-in-out;
+}
+#card > .card-1{
+    display: inherit;
+    
+}
+.card-1 > img{
+    width: 30em;
+    z-index: -1;
+    object-fit: contain;
+}
+.content-1{
+    margin: 3em;
+}
+/* Available Programs shower  */
+#ava_pro{
+    display: flex;
+    position: absolute;
+}
+.content-2{
+    display: inherit;
+    justify-content: center;
+    margin-top: 2em;
+    width: 50%;
+    margin-left: 25em;
+}
+.content-2 ol{
+    margin-top: 5em;
+}
+.boulder{
+    font-size: larger;
+}
+.price {
+        color: #e44d26;
+        font-weight: bold;
+        font-size: 0.8em;
+    }
