@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    box-sizing: border-box;
+    color: white;
+}
+body{
+    background-color: #000;
+    /* background: url('./the_netflix_login_background__canada__2024___by_logofeveryt_dh0w8qv-pre.jpg'); */
+
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    
+}
+body::before{
+    content: "";
+  background-image: url('./the_netflix_login_background__canada__2024___by_logofeveryt_dh0w8qv-pre.jpg');
+  background-size: cover;
+  position: fixed; /* or absolute */
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  opacity: 0.2; /* Adjust opacity here */
+  z-index: -1; /* Puts it behind content */
+}
+body::after{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Create a gradient from a dark color at the top, transparent in the middle, and dark at the bottom */
+    background-image: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.7) 0%,   /* Top dark (adjust opacity as needed) */
+        rgba(0, 0, 0, 0.5) 30%,   /* Transparent from 30% to 70% */
+        rgba(0, 0, 0, 0) 70%,
+        rgba(0, 0, 0, 0) 100%  /* Bottom dark (adjust opacity as needed) */
+    );
+    pointer-events: none;
+}
+.net{
+    color: red;
+    font-weight: bolder;
+    font-size: 30px;
+    
+}
+.sign{
+    background-color: red;
+	border-radius:10px;
+	border:1px solid red;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:13px;
+	padding:10px 20px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #662727;
+    display: inherit;
+    filter: drop-shadow(4px 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.sign:hover{
+    background-color: rgb(254, 29, 29);
+    transition: 0.5s ease-in-out;
+}
+ul{
+    display: flex;
+    justify-content: space-around;
+    gap: 100px;
+    padding-top: 1em;
+    align-items: center;
+}
+li{
+    list-style: none; 
+} 
+section{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 10%;
+}.content{
+    font-size: large;
+
+}
+#mail{
+ padding: 10px 10px;
+ background: transparent;
+ border: 1px solid grey;  
+ font-size: 20px; 
+}
+.start{
+    background-color: red;
+	border-radius:10px;
+	border: none;
+	display:inline-block;
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:13px;
+	padding: 15px 20px;
+}
+.start:hover{
+    background-color: rgb(255, 50, 50);
+    transition: 0.5s ease-in;
+}
+
+@media (max-width: 768px) {
+    .net {
+        font-size: 24px;
+    }
+    ul {
+        gap: 50px;
+        flex-wrap: wrap;
+    }
+    section {
+        padding-top: 20%;
+    }
+    .content {
+        font-size: medium;
+    }
+    #mail {
+        font-size: 16px;
+        padding: 8px 8px;
+    }
+    .start {
+        padding: 12px 16px;
+        font-size: 12px;
+    }
+}
