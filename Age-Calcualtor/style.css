@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    box-sizing: border-box;
+}
+
+.box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form {
+    height: 60vh;
+    display: inherit;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 5em;
+    font-size: 24px;
+    background: #2A7B9B;
+    background: linear-gradient(90deg, rgba(42, 123, 155, 1) 0%, rgba(87, 199, 133, 1) 50%, rgba(237, 221, 83, 1) 100%);
+    width: min(7000px, 70vw);
+    min-height: 320px;
+    border: 2px solid #fed4d4;
+    border-radius: 16px;
+    padding: 20px 28px;
+    gap: 20px;
+}
+
+#birthday{
+    width: min(200px, 70vw);
+    height: 5vh;
+}
+
+/* h1{
+    display: flex;
+    justify-content: center;
+} */
+.form #btn {
+    padding: 20px 20px;
+    border: none;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background-color: rgb(111, 111, 248);
+    border-radius: 20px;
+}
