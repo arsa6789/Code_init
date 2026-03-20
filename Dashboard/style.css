@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Pixelify Sans',  sans-serif;
+}
+
+body{
+    background: #121212;
+    color: #fff;
+}
+
+.sidenav{
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: black;
+    overflow-x: hidden;
+    padding-top: 80px;
+}
+.sidenav1{
+    height: 10%;
+    width: 200px;
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    background-color: black;
+    overflow: hidden;
+}
+.sidenav1 h2{
+    padding: 20px 20px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #fff;
+    display: block;
+}
+.sidenav a{
+    padding: 6px 6px 6px 32px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #CCC;
+    display: block;
+}
+.sidenav a:hover{
+    color: black;
+    background: #fff;
+}
+.main{
+    margin-left: 200px;
+}
+
+ul{
+    display: flex;
+    justify-content: space-around;
+}
+li{
+    list-style: none;
+}
+
+@media screen and (max-height: 450px){
+    .sidenav{padding-top: 15px;}
+    .sidenav a{font-size: 18px;}
+}
