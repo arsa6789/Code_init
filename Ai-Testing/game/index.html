@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dark Souls Mini</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#000;
+    overflow:hidden;
+    font-family:'Palatino Linotype', Palatino, 'Book Antiqua', serif;
+    user-select:none;
+  }
+  #c { display:block; width:100vw; height:100vh; }
+
+  /* ── HUD overlay ─────────────────────────────────────────── */
+  #hud { position:fixed; inset:0; pointer-events:none; z-index:10; }
+
+  /* ── Player bars – bottom left ───────────────────────────── */
+  #bars { position:absolute; bottom:40px; left:40px; display:flex; flex-direction:column; gap:8px; }
+  .bar-row { display:flex; align-items:center; gap:10px; }
+  .bar-label { color:#ccc; font-size:11px; letter-spacing:2px; text-transform:uppercase; width:28px; text-shadow:0 0 6px rgba(0,0,0,0.9); }
+  .bar-bg { width:200px; height:14px; background:rgba(0,0,0,0.55); border:1px solid rgba(255,255,255,0.15); border-radius:2px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:2px; transition:width 0.1s ease; }
+  #hp-fill  { background:linear-gradient(90deg,#8b0000,#c0392b); width:100%; }
+  #sta-fill { background:linear-gradient(90deg,#1a5a1a,#27ae60); width:100%; }
+
+  /* ── Enemy HP bar – top center ────────────────────────────── */
+  #enemy-hud { position:absolute; top:28px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:5px; min-width:260px; }
+  #enemy-name { color:#c9a96e; font-size:11px; letter-spacing:3px; text-transform:uppercase; text-shadow:0 0 8px rgba(180,120,30,0.5); }
+  #enemy-hp-bg { width:260px; height:10px; background:rgba(0,0,0,0.6); border:1px solid rgba(180,80,0,0.4); border-radius:2px; overflow:hidden; }
+  #enemy-hp-fill { height:100%; width:100%; background:linear-gradient(90deg,#5a0000,#9b1c1c); transition:width 0.15s ease; }
+
+  /* ── Combat state indicator ──────────────────────────────── */
+  #combat-state { position:absolute; bottom:80px; left:40px; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:rgba(200,200,200,0.5); }
+  #combat-state span { display:inline-block; padding:2px 8px; border:1px solid rgba(255,255,255,0.1); border-radius:2px; margin-right:6px; background:rgba(0,0,0,0.4); transition:all 0.1s; }
+  #combat-state span.active { color:#e8c97a; border-color:rgba(200,160,50,0.5); background:rgba(40,30,0,0.6); }
+  #combat-state span.danger { color:#ff4444; border-color:rgba(255,60,60,0.5); background:rgba(40,0,0,0.6); }
+
+  /* ── Screen flashes ──────────────────────────────────────── */
+  #roll-flash   { position:absolute; inset:0; background:rgba(255,255,255,0.06); opacity:0; pointer-events:none; transition:opacity 0.15s ease; }
+  #hit-flash    { position:absolute; inset:0; background:rgba(180,0,0,0.25);     opacity:0; pointer-events:none; transition:opacity 0.08s ease; }
+  #block-flash  { position:absolute; inset:0; background:rgba(100,140,255,0.12); opacity:0; pointer-events:none; transition:opacity 0.1s ease; }
+  #attack-flash { position:absolute; inset:0; background:rgba(255,200,50,0.08);  opacity:0; pointer-events:none; transition:opacity 0.08s ease; }
+
+  /* ── Crosshair ───────────────────────────────────────────── */
+  #crosshair { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:12px; height:12px; }
+  #crosshair::before, #crosshair::after { content:''; position:absolute; background:rgba(255,255,255,0.45); }
+  #crosshair::before { width:2px; height:12px; left:5px; top:0; }
+  #crosshair::after  { width:12px; height:2px; top:5px;  left:0; }
+
+  /* ── Controls legend ─────────────────────────────────────── */
+  #legend { position:absolute; top:24px; right:28px; color:rgba(200,200,200,0.4); font-size:10px; letter-spacing:1.5px; line-height:2.0; text-align:right; text-transform:uppercase; }
+
+  /* ── Click-to-play overlay ───────────────────────────────── */
+  #lock-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:50; color:#c9a96e; gap:16px; pointer-events:all; cursor:pointer; transition:opacity 0.4s ease; }
+  #lock-overlay h1 { font-size:clamp(28px,5vw,52px); letter-spacing:6px; text-transform:uppercase; text-shadow:0 0 30px rgba(180,130,50,0.6); color:#e8c97a; }
+  #lock-overlay p  { font-size:14px; letter-spacing:3px; color:#8a7050; text-transform:uppercase; }
+  #lock-overlay .sub { font-size:10px; color:#5a4a30; letter-spacing:2px; line-height:2.2; text-align:center; }
+  #lock-overlay.hidden { opacity:0; pointer-events:none; }
+
+  /* ── You Died / Victory ──────────────────────────────────── */
+  #msg { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; font-size:clamp(32px,6vw,64px); letter-spacing:8px; text-transform:uppercase; color:#8b0000; text-shadow:0 0 40px rgba(180,0,0,0.5); pointer-events:none; opacity:0; z-index:60; transition:opacity 0.6s ease; }
+  #msg.visible { opacity:1; }
+  #msg.victory { color:#c9a96e; text-shadow:0 0 40px rgba(200,160,50,0.6); }
+</style>
+</head>
+<body>
+
+<canvas id="c"></canvas>
+
+<div id="hud">
+  <!-- Player HP + Stamina -->
+  <div id="bars">
+    <div class="bar-row">
+      <span class="bar-label">HP</span>
+      <div class="bar-bg"><div class="bar-fill" id="hp-fill"></div></div>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">SP</span>
+      <div class="bar-bg"><div class="bar-fill" id="sta-fill"></div></div>
+    </div>
+  </div>
+
+  <!-- Enemy HP -->
+  <div id="enemy-hud">
+    <div id="enemy-name">Red Knight</div>
+    <div id="enemy-hp-bg"><div id="enemy-hp-fill"></div></div>
+  </div>
+
+  <!-- Combat state pill labels -->
+  <div id="combat-state">
+    <span id="cs-block">Block</span>
+    <span id="cs-attack">Attack</span>
+    <span id="cs-heavy">Heavy</span>
+    <span id="cs-roll">Roll</span>
+    <span id="cs-iframe">I-Frame</span>
+  </div>
+
+  <div id="roll-flash"></div>
+  <div id="hit-flash"></div>
+  <div id="block-flash"></div>
+  <div id="attack-flash"></div>
+  <div id="crosshair"></div>
+
+  <div id="legend">
+    WASD — Move<br>
+    Mouse — Look<br>
+    LClick — Light Attack<br>
+    Hold LClick — Heavy Attack<br>
+    RClick — Block<br>
+    Space — Roll (I-Frames)<br>
+    ESC — Unlock
+  </div>
+</div>
+
+<div id="msg">You Died</div>
+
+<div id="lock-overlay">
+  <h1>Dark Souls Mini</h1>
+  <p>Click to Begin</p>
+  <span class="sub">
+    LMB · Light Attack &nbsp;|&nbsp; Hold LMB · Heavy Attack<br>
+    RMB · Block &nbsp;|&nbsp; Space · Roll with I-Frames
+  </span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   DARK SOULS MINI  v2  –  Full Combat System
+   ═══════════════════════════════════════════════════════════════════
+   Sections:
+     1.  Renderer / Scene / Camera
+     2.  Player geometry (silver knight)
+     3.  Enemy geometry (red knight) + AI state
+     4.  Arena (floor, walls, pillars, bonfire)
+     5.  Souls camera rig
+     6.  Input system (PointerLock, WASD, Mouse buttons)
+     7.  Combat system (light/heavy attack, block, hitboxes)
+     8.  Player movement + I-frames
+     9.  Enemy AI update (chase, attack, recoil)
+    10.  Walk / combat animation
+    11.  HUD helpers
+    12.  Main animate loop
+   ═══════════════════════════════════════════════════════════════════ */
+
+
+// ── 1. RENDERER / SCENE / CAMERA ────────────────────────────────────
+const canvas   = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.shadowMap.enabled = false; // no shadows = big perf win
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0a0e);
+scene.fog         = new THREE.Fog(0x0a0a0e, 22, 60);
+
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 100);
+
+window.addEventListener('resize', () => {
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+});
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   2. PLAYER GEOMETRY  – Silver Knight
+      All MeshBasicMaterial → zero lighting pass, great on low-end GPUs
+   ═══════════════════════════════════════════════════════════════════ */
+
+const MAT = {
+  armor    : new THREE.MeshBasicMaterial({ color: 0x4a4a5a }),
+  face     : new THREE.MeshBasicMaterial({ color: 0x2a1f18 }),
+  gold     : new THREE.MeshBasicMaterial({ color: 0x8a7030 }),
+  cloak    : new THREE.MeshBasicMaterial({ color: 0x2a1a1a }),
+  sword    : new THREE.MeshBasicMaterial({ color: 0x888898 }),
+  shield   : new THREE.MeshBasicMaterial({ color: 0x3a3848 }),
+  shieldRim: new THREE.MeshBasicMaterial({ color: 0x6a5820 }),
+};
+
+// Convenience: make a box mesh and add to parent
+function box(w,h,d, mat, px,py,pz, parent) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), mat);
+  m.position.set(px,py,pz);
+  parent.add(m);
+  return m;
+}
+
+const player = new THREE.Group();
+scene.add(player);
+player.position.set(0, 0, 3);
+
+// Body parts stored as vars for animation
+const torso      = box(0.50,0.55,0.28, MAT.armor,   0,  1.00, 0,    player);
+const head       = box(0.32,0.34,0.30, MAT.armor,   0,  1.55, 0,    player);
+                   box(0.24,0.07,0.06, MAT.face,    0,  1.56, 0.15, player); // visor
+                   box(0.06,0.18,0.28, MAT.gold,    0,  1.78, 0,    player); // crest
+                   box(0.22,0.14,0.24, MAT.armor,  -0.38,1.15,0,    player); // L shoulder
+                   box(0.22,0.14,0.24, MAT.armor,   0.38,1.15,0,    player); // R shoulder
+const lUArm      = box(0.14,0.28,0.16, MAT.armor,  -0.38,0.86,0,    player);
+const rUArm      = box(0.14,0.28,0.16, MAT.armor,   0.38,0.86,0,    player);
+                   box(0.11,0.26,0.13, MAT.armor,  -0.38,0.60,0,    player); // L forearm
+                   box(0.11,0.26,0.13, MAT.armor,   0.38,0.60,0,    player); // R forearm
+
+// Sword pivot group – swing animation rotates this
+const swordPivot = new THREE.Group();
+swordPivot.position.set(0.38, 0.5, 0);
+player.add(swordPivot);
+                   box(0.05,0.72,0.04, MAT.sword,   0,-0.28, 0,  swordPivot); // blade
+                   box(0.28,0.05,0.05, MAT.gold,    0, 0.00, 0,  swordPivot); // crossguard
+
+// Shield pivot group – block animation rotates this
+const shieldPivot = new THREE.Group();
+shieldPivot.position.set(-0.38, 0.9, 0);
+player.add(shieldPivot);
+                   box(0.06,0.55,0.42, MAT.shield,  0, 0, 0.14, shieldPivot);
+                   box(0.04,0.52,0.38, MAT.shieldRim,0,0, 0.18, shieldPivot);
+
+                   box(0.44,0.22,0.24, MAT.armor,   0,  0.68, 0,   player); // pelvis
+const lThigh     = box(0.17,0.32,0.18, MAT.armor,  -0.14,0.44,0,   player);
+const rThigh     = box(0.17,0.32,0.18, MAT.armor,   0.14,0.44,0,   player);
+const lShin      = box(0.14,0.32,0.15, MAT.armor,  -0.14,0.14,0,   player);
+const rShin      = box(0.14,0.32,0.15, MAT.armor,   0.14,0.14,0,   player);
+                   box(0.14,0.10,0.22, MAT.armor,  -0.14,0.00,0.04, player); // L foot
+                   box(0.14,0.10,0.22, MAT.armor,   0.14,0.00,0.04, player); // R foot
+                   box(0.44,0.70,0.06, MAT.cloak,   0,  0.76,-0.17, player); // cloak
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   3. ENEMY GEOMETRY  – Red Knight
+      Same primitive system, distinct menacing red palette
+   ═══════════════════════════════════════════════════════════════════ */
+
+const EMAT = {
+  armor    : new THREE.MeshBasicMaterial({ color: 0x6a1010 }),
+  dark     : new THREE.MeshBasicMaterial({ color: 0x3a0808 }),
+  gold     : new THREE.MeshBasicMaterial({ color: 0x7a4010 }),
+  eye      : new THREE.MeshBasicMaterial({ color: 0xff3300, transparent:true, opacity:0.9 }),
+  sword    : new THREE.MeshBasicMaterial({ color: 0x5a1a1a }),
+  cloak    : new THREE.MeshBasicMaterial({ color: 0x220808 }),
+  armorHit : new THREE.MeshBasicMaterial({ color: 0xff8888 }), // flash on hit
+};
+
+const enemy = new THREE.Group();
+scene.add(enemy);
+enemy.position.set(6, 0, -4);
+
+const eTorso  = box(0.52,0.57,0.30, EMAT.armor,   0,  1.00, 0,    enemy);
+const eHead   = box(0.34,0.36,0.32, EMAT.armor,   0,  1.56, 0,    enemy);
+               box(0.20,0.06,0.06, EMAT.eye,      0,  1.57, 0.16, enemy); // glowing eye
+               box(0.06,0.22,0.06, EMAT.dark,    -0.10,1.82,0,    enemy); // L horn
+               box(0.06,0.22,0.06, EMAT.dark,     0.10,1.82,0,    enemy); // R horn
+               box(0.06,0.16,0.06, EMAT.gold,     0,   1.80,0,    enemy); // center crest
+               box(0.28,0.18,0.28, EMAT.dark,    -0.42,1.16,0,    enemy); // L shoulder
+               box(0.28,0.18,0.28, EMAT.dark,     0.42,1.16,0,    enemy); // R shoulder
+const eLUArm  = box(0.16,0.30,0.18, EMAT.armor,  -0.42,0.86,0,    enemy);
+const eRUArm  = box(0.16,0.30,0.18, EMAT.armor,   0.42,0.86,0,    enemy);
+               box(0.13,0.28,0.15, EMAT.armor,   -0.42,0.58,0,    enemy); // L forearm
+               box(0.13,0.28,0.15, EMAT.armor,    0.42,0.58,0,    enemy); // R forearm
+
+// Enemy sword pivot
+const eSwordPivot = new THREE.Group();
+eSwordPivot.position.set(0.42, 0.5, 0);
+enemy.add(eSwordPivot);
+               box(0.06,0.85,0.05, EMAT.sword,   0,-0.35, 0, eSwordPivot);
+               box(0.32,0.06,0.06, EMAT.gold,    0,  0.0, 0, eSwordPivot);
+
+               box(0.46,0.24,0.26, EMAT.armor,   0,  0.68,0,    enemy); // pelvis
+const eLThigh = box(0.18,0.34,0.20, EMAT.armor,  -0.14,0.44,0,  enemy);
+const eRThigh = box(0.18,0.34,0.20, EMAT.armor,   0.14,0.44,0,  enemy);
+const eLShin  = box(0.15,0.34,0.17, EMAT.armor,  -0.14,0.13,0,  enemy);
+const eRShin  = box(0.15,0.34,0.17, EMAT.armor,   0.14,0.13,0,  enemy);
+               box(0.15,0.11,0.24, EMAT.dark,   -0.14,0.00,0.04, enemy); // L foot
+               box(0.15,0.11,0.24, EMAT.dark,    0.14,0.00,0.04, enemy); // R foot
+               box(0.46,0.72,0.06, EMAT.cloak,   0,  0.76,-0.18, enemy); // cloak
+
+// Billboard HP bar above enemy head (2D plane that faces camera)
+const eHpBarBg = new THREE.Mesh(
+  new THREE.PlaneGeometry(1.0, 0.10),
+  new THREE.MeshBasicMaterial({ color:0x330000 })
+);
+const eHpBarFg = new THREE.Mesh(
+  new THREE.PlaneGeometry(1.0, 0.08),
+  new THREE.MeshBasicMaterial({ color:0xff2200 })
+);
+eHpBarBg.position.set(0, 2.3, 0);
+eHpBarFg.position.set(0, 2.3, 0.01);
+enemy.add(eHpBarBg);
+enemy.add(eHpBarFg);
+
+// Snapshot original materials for hit-flash restore
+const enemyMeshes = [];
+enemy.traverse(o => { if (o.isMesh) enemyMeshes.push({ mesh:o, mat:o.material }); });
+
+// ── Enemy state object ──────────────────────────────────────────
+// States: 'idle' | 'chase' | 'attack' | 'recoil' | 'dead'
+const ENEMY = {
+  hp               : 120,
+  hpMax            : 120,
+  state            : 'idle',
+  stateTimer       : 0,
+  _hitLanded       : false,   // prevent multi-hit per swing
+
+  detectRange      : 12,      // aggro radius
+  attackRange      : 1.85,    // melee reach
+  attackDmg        : 18,
+  attackDur        : 0.55,    // swing animation length (s)
+  attackCooldown   : 0,
+  attackCooldownMax: 2.2,
+
+  speed            : 2.6,
+  turnSpeed        : 5.0,
+  walkCycle        : 0,
+
+  recoilDur        : 0.35,
+  hitFlashTimer    : 0,
+  dead             : false,
+};
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   4. ARENA
+   ═══════════════════════════════════════════════════════════════════ */
+
+const floor = new THREE.Mesh(
+  new THREE.PlaneGeometry(30,30,4,4),
+  new THREE.MeshBasicMaterial({ color:0x1a1614 })
+);
+floor.rotation.x = -Math.PI/2;
+scene.add(floor);
+
+const gridHelper = new THREE.GridHelper(30,15, 0x2a2220, 0x221e1c);
+gridHelper.position.y = 0.01;
+scene.add(gridHelper);
+
+const wallMat = new THREE.MeshBasicMaterial({ color:0x1e1c22 });
+function makeWall(px,pz,ry) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(30,4,0.5), wallMat);
+  m.position.set(px,2,pz);
+  m.rotation.y = ry;
+  scene.add(m);
+}
+makeWall(0, -15, 0);
+makeWall(0,  15, Math.PI);
+makeWall(-15, 0, Math.PI/2);
+makeWall( 15, 0,-Math.PI/2);
+
+const pillarGeo = new THREE.BoxGeometry(0.6,3.0,0.6);
+const pillarMat = new THREE.MeshBasicMaterial({ color:0x282530 });
+[[-8,-8],[8,-8],[-8,8],[8,8],[-12,-12],[12,-12],[-12,12],[12,12]]
+.forEach(([x,z]) => {
+  const p = new THREE.Mesh(pillarGeo, pillarMat);
+  p.position.set(x,1.5,z);
+  scene.add(p);
+});
+
+// Bonfire
+const bonfireBase = new THREE.Mesh(
+  new THREE.BoxGeometry(0.4,0.35,0.4),
+  new THREE.MeshBasicMaterial({ color:0x3a2a1a })
+);
+bonfireBase.position.set(0,0.175,-5);
+scene.add(bonfireBase);
+
+const flameMat  = new THREE.MeshBasicMaterial({ color:0xff6600, transparent:true, opacity:0.9 });
+const flame     = new THREE.Mesh(new THREE.BoxGeometry(0.18,0.35,0.18), flameMat);
+flame.position.set(0,0.55,-5);
+scene.add(flame);
+
+const flameMat2 = new THREE.MeshBasicMaterial({ color:0xffdd00, transparent:true, opacity:0.85 });
+const flame2    = new THREE.Mesh(new THREE.BoxGeometry(0.09,0.25,0.09), flameMat2);
+flame2.position.set(0,0.68,-5);
+scene.add(flame2);
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   5. SOULS CAMERA RIG
+   ═══════════════════════════════════════════════════════════════════ */
+
+const CAM = {
+  radius      : 4.5,
+  yaw         : 0,
+  pitch       : 0.28,
+  pitchMin    : -0.05,
+  pitchMax    : 1.0,
+  targetHeight: 1.3,
+  sensitivity : 0.0025,
+};
+
+function updateCamera() {
+  const cx = player.position.x + CAM.radius * Math.sin(CAM.yaw)  * Math.cos(CAM.pitch);
+  const cy = player.position.y + CAM.targetHeight + CAM.radius   * Math.sin(CAM.pitch);
+  const cz = player.position.z + CAM.radius * Math.cos(CAM.yaw)  * Math.cos(CAM.pitch);
+  camera.position.set(cx,cy,cz);
+  camera.lookAt(player.position.x, player.position.y + CAM.targetHeight, player.position.z);
+}
+
+// Keep enemy billboard facing camera each frame
+function billboardEnemyHud() {
+  if (ENEMY.dead) return;
+  eHpBarBg.lookAt(camera.position);
+  eHpBarFg.lookAt(camera.position);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   6. INPUT SYSTEM
+   ═══════════════════════════════════════════════════════════════════ */
+
+const keys = {};
+document.addEventListener('keydown', e => { keys[e.code] = true;  });
+document.addEventListener('keyup',   e => { keys[e.code] = false; });
+
+let mouseDX = 0, mouseDY = 0;
+document.addEventListener('mousemove', e => {
+  if (document.pointerLockElement === canvas) {
+    mouseDX += e.movementX;
+    mouseDY += e.movementY;
+  }
+});
+
+const mouse = { left:false, right:false };
+let lmbHoldTime = 0;    // how long LMB has been held
+let lmbWasDown  = false;
+const HEAVY_THRESH = 0.42; // hold > this → heavy attack
+
+canvas.addEventListener('mousedown', e => {
+  if (document.pointerLockElement !== canvas) return;
+  if (e.button === 0) mouse.left  = true;
+  if (e.button === 2) mouse.right = true;
+});
+canvas.addEventListener('mouseup', e => {
+  if (e.button === 0) mouse.left  = false;
+  if (e.button === 2) mouse.right = false;
+});
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+const overlay = document.getElementById('lock-overlay');
+overlay.addEventListener('click', () => canvas.requestPointerLock());
+document.addEventListener('pointerlockchange', () => {
+  overlay.classList.toggle('hidden', document.pointerLockElement === canvas);
+});
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   7. COMBAT SYSTEM
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Hitbox helper ──────────────────────────────────────────────────
+   Sphere-overlap between sword-tip world position and target center.
+   Fast, no allocations when using pre-allocated vectors below.      */
+const _swingTip    = new THREE.Vector3();
+const _enemyCenter = new THREE.Vector3();
+const _playerCenter= new THREE.Vector3();
+
+function checkHitEnemy(radius) {
+  if (ENEMY.dead) return false;
+  // Get sword tip world position (tip is at bottom of swordPivot local space)
+  _swingTip.set(0, -0.72, 0.28);
+  swordPivot.localToWorld(_swingTip);
+  _enemyCenter.copy(enemy.position);
+  _enemyCenter.y += 1.0;
+  return _swingTip.distanceTo(_enemyCenter) < radius;
+}
+
+function checkEnemyHitPlayer(radius) {
+  // Enemy sword tip
+  _swingTip.set(0, -0.85, 0.28);
+  eSwordPivot.localToWorld(_swingTip);
+  _playerCenter.copy(player.position);
+  _playerCenter.y += 1.0;
+  return _swingTip.distanceTo(_playerCenter) < radius;
+}
+
+// ── Combat state for player ──────────────────────────────────────
+// Attack phases: 'none' | 'windup' | 'active' | 'recovery'
+const COMBAT = {
+  attackPhase   : 'none',
+  attackTimer   : 0,
+  attackType    : 'light',  // 'light' | 'heavy'
+  hitLanded     : false,    // guard against multi-hit per swing
+
+  // Light attack timings (seconds)
+  lightWindup   : 0.12,
+  lightActive   : 0.18,
+  lightRecovery : 0.20,
+  lightDmg      : 22,
+  lightStaCost  : 18,
+
+  // Heavy attack timings
+  heavyWindup   : 0.28,
+  heavyActive   : 0.24,
+  heavyRecovery : 0.36,
+  heavyDmg      : 48,
+  heavyStaCost  : 35,
+
+  // Block
+  blocking      : false,
+  blockDmgMult  : 0.20,   // take 20% damage while blocking
+  blockStaCost  : 12,     // stamina cost per blocked hit
+  blockStaDrain : 8,      // stamina drain per second holding block
+
+  // Cooldown between attacks
+  cooldown      : 0,
+  cooldownTime  : 0.12,
+
+  // Combo
+  comboCount    : 0,
+  comboWindow   : 0,
+};
+
+// ── Start an attack ──────────────────────────────────────────────
+function startAttack(type) {
+  if (PLAYER.rolling)                return;
+  if (COMBAT.attackPhase !== 'none') return;
+  if (COMBAT.cooldown > 0)           return;
+  if (COMBAT.blocking)               return;
+
+  const cost = (type === 'heavy') ? COMBAT.heavyStaCost : COMBAT.lightStaCost;
+  if (PLAYER.sta < cost)             return;
+
+  PLAYER.sta           -= cost;
+  PLAYER.staRegenDelay  = 0.8;
+  COMBAT.attackPhase    = 'windup';
+  COMBAT.attackTimer    = 0;
+  COMBAT.attackType     = type;
+  COMBAT.hitLanded      = false;
+
+  if (type === 'light') {
+    COMBAT.comboCount  = (COMBAT.comboWindow > 0) ? COMBAT.comboCount + 1 : 1;
+    COMBAT.comboWindow = 0.55;
+  } else {
+    COMBAT.comboCount = 0;
+  }
+  flashEl('attack-flash', 0.08);
+}
+
+// ── Combat FSM tick ──────────────────────────────────────────────
+function updateCombat(dt) {
+
+  // ── Attack phase FSM ────────────────────────────────────────
+  if (COMBAT.attackPhase !== 'none') {
+    COMBAT.attackTimer += dt;
+
+    const wu  = (COMBAT.attackType==='heavy') ? COMBAT.heavyWindup   : COMBAT.lightWindup;
+    const ac  = (COMBAT.attackType==='heavy') ? COMBAT.heavyActive   : COMBAT.lightActive;
+    const rc  = (COMBAT.attackType==='heavy') ? COMBAT.heavyRecovery : COMBAT.lightRecovery;
+    const dmg = (COMBAT.attackType==='heavy') ? COMBAT.heavyDmg      : COMBAT.lightDmg;
+
+    if (COMBAT.attackPhase === 'windup' && COMBAT.attackTimer >= wu) {
+      COMBAT.attackPhase = 'active';
+      COMBAT.attackTimer = 0;
+    }
+    else if (COMBAT.attackPhase === 'active') {
+      // Live hitbox check every frame during active window
+      if (!COMBAT.hitLanded) {
+        const hitR = (COMBAT.attackType==='heavy') ? 2.4 : 1.9;
+        if (checkHitEnemy(hitR)) {
+          COMBAT.hitLanded = true;
+          hurtEnemy(dmg);
+        }
+      }
+      if (COMBAT.attackTimer >= ac) {
+        COMBAT.attackPhase = 'recovery';
+        COMBAT.attackTimer = 0;
+      }
+    }
+    else if (COMBAT.attackPhase === 'recovery' && COMBAT.attackTimer >= rc) {
+      COMBAT.attackPhase = 'none';
+      COMBAT.attackTimer = 0;
+      COMBAT.cooldown    = COMBAT.cooldownTime;
+    }
+  }
+
+  // Combo window decay
+  if (COMBAT.comboWindow > 0) COMBAT.comboWindow -= dt;
+
+  // Cooldown decay
+  if (COMBAT.cooldown > 0) COMBAT.cooldown -= dt;
+
+  // ── Block ────────────────────────────────────────────────────
+  // Block active when: RMB held, not rolling, not in an attack
+  COMBAT.blocking = mouse.right && !PLAYER.rolling && COMBAT.attackPhase === 'none';
+  if (COMBAT.blocking) {
+    PLAYER.sta = Math.max(0, PLAYER.sta - COMBAT.blockStaDrain * dt);
+    if (PLAYER.sta <= 0) COMBAT.blocking = false; // guard break
+    PLAYER.staRegenDelay = 0.2;
+  }
+}
+
+// ── Damage the enemy ────────────────────────────────────────────
+function hurtEnemy(dmg) {
+  if (ENEMY.dead) return;
+  ENEMY.hp = Math.max(0, ENEMY.hp - dmg);
+  updateEnemyHpBar();
+
+  // Hit-flash: swap all enemy meshes to pink for a moment
+  ENEMY.hitFlashTimer = 0.12;
+  enemyMeshes.forEach(o => o.mesh.material = EMAT.armorHit);
+
+  // Force recoil (interrupt any state)
+  if (ENEMY.state !== 'dead') {
+    ENEMY.state      = 'recoil';
+    ENEMY.stateTimer = ENEMY.recoilDur;
+  }
+
+  if (ENEMY.hp <= 0) killEnemy();
+}
+
+function killEnemy() {
+  ENEMY.dead  = true;
+  ENEMY.state = 'dead';
+  enemy.rotation.z = Math.PI / 2; // fall over
+  enemy.position.y = 0.3;
+  eHpBarBg.visible = eHpBarFg.visible = false;
+  showMessage('Enemy Slain', true);
+}
+
+// ── Damage the player ────────────────────────────────────────────
+let playerInvincible = false;
+let playerDeadFlag   = false;
+
+function hurtPlayer(dmg) {
+  if (playerInvincible || playerDeadFlag) return;
+
+  // ── I-frames: immune during mid-roll window ─────────────────
+  // Window is 10%→85% of roll duration (standard Souls timing)
+  if (PLAYER.rolling) {
+    const t = PLAYER.rollTimer / PLAYER.rollDuration;
+    if (t > 0.10 && t < 0.85) return; // invincible!
+  }
+
+  // ── Block mitigation ────────────────────────────────────────
+  if (COMBAT.blocking) {
+    // Check if roughly facing the attacker
+    const toE    = new THREE.Vector3().subVectors(enemy.position, player.position).normalize();
+    const facing = new THREE.Vector3(-Math.sin(player.rotation.y), 0, -Math.cos(player.rotation.y));
+    if (facing.dot(toE) > 0.3) {
+      // Successful block
+      PLAYER.sta = Math.max(0, PLAYER.sta - COMBAT.blockStaCost);
+      PLAYER.staRegenDelay = 1.2;
+      flashEl('block-flash', 0.12);
+      if (PLAYER.sta > 0) {
+        dmg = Math.floor(dmg * COMBAT.blockDmgMult); // reduce damage
+      }
+      // Guard break when stamina hits 0 during block
+      if (PLAYER.sta <= 0) COMBAT.blocking = false;
+    }
+  }
+
+  PLAYER.hp = Math.max(0, PLAYER.hp - dmg);
+  flashEl('hit-flash', 0.18);
+  updateHUD();
+
+  if (PLAYER.hp <= 0) {
+    playerDeadFlag = true;
+    showMessage('You Died', false);
+    setTimeout(() => respawnPlayer(), 3200);
+  }
+}
+
+function respawnPlayer() {
+  playerDeadFlag    = false;
+  playerInvincible  = true;
+  player.position.set(0, 0, 5);
+  player.rotation.set(0, 0, 0);
+  PLAYER.hp  = PLAYER.hpMax;
+  PLAYER.sta = PLAYER.staMax;
+  COMBAT.attackPhase = 'none';
+  PLAYER.rolling     = false;
+  // Also reset enemy
+  ENEMY.hp           = ENEMY.hpMax;
+  ENEMY.dead         = false;
+  ENEMY.state        = 'idle';
+  ENEMY.stateTimer   = 0;
+  enemy.rotation.set(0,0,0);
+  enemy.position.set(6, 0, -4);
+  eHpBarBg.visible   = eHpBarFg.visible = true;
+  enemyMeshes.forEach(o => o.mesh.material = o.mat);
+  updateEnemyHpBar();
+  updateHUD();
+  // Brief invincibility after respawn
+  setTimeout(() => { playerInvincible = false; }, 1200);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   8. PLAYER STATE + MOVEMENT + I-FRAMES
+   ═══════════════════════════════════════════════════════════════════ */
+
+const PLAYER = {
+  hp           : 120,
+  hpMax        : 120,
+  sta          : 100,
+  staMax       : 100,
+  velY         : 0,
+  onGround     : true,
+  rolling      : false,
+  rollTimer    : 0,
+  rollDuration : 0.45,
+  rollDir      : new THREE.Vector3(),
+  rollCost     : 22,
+  speed        : 5.0,
+  rollSpeed    : 9.2,
+  staRegenRate : 22,
+  staRegenDelay: 0,
+};
+
+const GRAVITY = -18;
+const FLOOR_Y = 0.0;
+const BOUND   = 13.5;
+const moveDir = new THREE.Vector3();
+
+let spaceWasDown = false;
+let walkCycle    = 0;
+
+// Generic flash helper – sets opacity then fades via CSS transition
+function flashEl(id, duration) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.opacity = '1';
+  setTimeout(() => { el.style.opacity = '0'; }, duration * 1000);
+}
+
+function startRoll() {
+  if (PLAYER.rolling)               return;
+  if (PLAYER.sta < PLAYER.rollCost) return;
+  // Can't roll out of windup (like DS), CAN roll-cancel recovery
+  if (COMBAT.attackPhase === 'windup') return;
+
+  // Roll-cancel recovery
+  if (COMBAT.attackPhase === 'recovery') {
+    COMBAT.attackPhase = 'none';
+    COMBAT.attackTimer = 0;
+  }
+
+  const hasMoveInput = keys['KeyW']||keys['KeyS']||keys['KeyA']||keys['KeyD'];
+  if (hasMoveInput) {
+    PLAYER.rollDir.copy(moveDir).normalize();
+  } else {
+    // Backstep
+    PLAYER.rollDir.set(-Math.sin(CAM.yaw), 0, -Math.cos(CAM.yaw)).normalize();
+  }
+
+  PLAYER.rolling       = true;
+  PLAYER.rollTimer     = 0;
+  PLAYER.sta          -= PLAYER.rollCost;
+  PLAYER.staRegenDelay = 1.0;
+  flashEl('roll-flash', 0.15);
+  updateHUD();
+}
+
+function handleInput(dt) {
+  // ── Mouse look ────────────────────────────────────────────
+  CAM.yaw   -= mouseDX * CAM.sensitivity;
+  CAM.pitch -= mouseDY * CAM.sensitivity;
+  CAM.pitch  = Math.max(CAM.pitchMin, Math.min(CAM.pitchMax, CAM.pitch));
+  mouseDX = mouseDY = 0;
+
+  // ── Roll (Space, one-shot) ────────────────────────────────
+  if (keys['Space'] && !spaceWasDown) startRoll();
+  spaceWasDown = !!keys['Space'];
+
+  // ── LMB: hold to charge heavy, release for light ──────────
+  if (mouse.left && !PLAYER.rolling) {
+    if (!lmbWasDown) {
+      lmbHoldTime = 0;
+      lmbWasDown  = true;
+    } else {
+      lmbHoldTime += dt;
+      // If held long enough and idle, fire heavy
+      if (lmbHoldTime >= HEAVY_THRESH && COMBAT.attackPhase === 'none') {
+        startAttack('heavy');
+        lmbWasDown = false; // consume so release doesn't also fire light
+      }
+    }
+  } else {
+    if (lmbWasDown) {
+      // Released before heavy threshold → light attack
+      if (lmbHoldTime < HEAVY_THRESH) startAttack('light');
+      lmbWasDown  = false;
+      lmbHoldTime = 0;
+    }
+  }
+
+  // ── Movement vector (WASD, camera-relative) ───────────────
+  moveDir.set(0,0,0);
+  const fwd = new THREE.Vector3(-Math.sin(CAM.yaw), 0,-Math.cos(CAM.yaw));
+  const rgt = new THREE.Vector3( Math.cos(CAM.yaw), 0,-Math.sin(CAM.yaw));
+  if (keys['KeyW']||keys['ArrowUp'])    moveDir.add(fwd);
+  if (keys['KeyS']||keys['ArrowDown'])  moveDir.sub(fwd);
+  if (keys['KeyA']||keys['ArrowLeft'])  moveDir.sub(rgt);
+  if (keys['KeyD']||keys['ArrowRight']) moveDir.add(rgt);
+  if (moveDir.lengthSq() > 0) moveDir.normalize();
+
+  // ── Player rotation ────────────────────────────────────────
+  // During attack: auto-face enemy (soft lock-on assist)
+  if (COMBAT.attackPhase !== 'none' && !ENEMY.dead) {
+    const toE = new THREE.Vector3().subVectors(enemy.position, player.position);
+    toE.y = 0;
+    if (toE.lengthSq() > 0.01) {
+      const ta = Math.atan2(toE.x, toE.z);
+      let d = ta - player.rotation.y;
+      while (d >  Math.PI) d -= 2*Math.PI;
+      while (d < -Math.PI) d += 2*Math.PI;
+      player.rotation.y += d * Math.min(1, 18*dt);
+    }
+  } else if (!PLAYER.rolling && moveDir.lengthSq() > 0) {
+    const ta = Math.atan2(moveDir.x, moveDir.z);
+    let d = ta - player.rotation.y;
+    while (d >  Math.PI) d -= 2*Math.PI;
+    while (d < -Math.PI) d += 2*Math.PI;
+    player.rotation.y += d * Math.min(1, 12*dt);
+  }
+
+  // ── Speed multiplier based on combat state ─────────────────
+  let moveMult = 1.0;
+  if (COMBAT.attackPhase === 'windup' || COMBAT.attackPhase === 'active') moveMult = 0.0;
+  if (COMBAT.attackPhase === 'recovery') moveMult = 0.35;
+  if (COMBAT.blocking) moveMult = 0.5;
+
+  // ── Apply movement ─────────────────────────────────────────
+  if (PLAYER.rolling) {
+    PLAYER.rollTimer += dt;
+    const t        = PLAYER.rollTimer / PLAYER.rollDuration;
+    const ease     = 1 - t*t;
+    player.position.x += PLAYER.rollDir.x * PLAYER.rollSpeed * ease * dt;
+    player.position.z += PLAYER.rollDir.z * PLAYER.rollSpeed * ease * dt;
+    player.rotation.x  = Math.sin(t * Math.PI) * 0.65;
+    if (PLAYER.rollTimer >= PLAYER.rollDuration) {
+      PLAYER.rolling    = false;
+      player.rotation.x = 0;
+    }
+  } else {
+    player.position.x += moveDir.x * PLAYER.speed * moveMult * dt;
+    player.position.z += moveDir.z * PLAYER.speed * moveMult * dt;
+  }
+
+  // ── Gravity ───────────────────────────────────────────────
+  if (!PLAYER.onGround) PLAYER.velY += GRAVITY * dt;
+  player.position.y += PLAYER.velY * dt;
+  if (player.position.y <= FLOOR_Y) {
+    player.position.y = FLOOR_Y;
+    PLAYER.velY       = 0;
+    PLAYER.onGround   = true;
+  }
+
+  // ── Boundary clamp ────────────────────────────────────────
+  player.position.x = Math.max(-BOUND, Math.min(BOUND, player.position.x));
+  player.position.z = Math.max(-BOUND, Math.min(BOUND, player.position.z));
+
+  // ── Stamina regen ─────────────────────────────────────────
+  if (PLAYER.staRegenDelay > 0) {
+    PLAYER.staRegenDelay -= dt;
+  } else {
+    PLAYER.sta = Math.min(PLAYER.staMax, PLAYER.sta + PLAYER.staRegenRate * dt);
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   9. ENEMY AI  – Simple FSM
+      idle → chase → attack → recoil → (back to chase)
+   ═══════════════════════════════════════════════════════════════════ */
+
+const _toPlayer  = new THREE.Vector3();
+
+function updateEnemy(dt) {
+  if (ENEMY.dead) return;
+
+  _toPlayer.subVectors(player.position, enemy.position);
+  _toPlayer.y = 0;
+  const dist    = _toPlayer.length();
+  const dirNorm = _toPlayer.clone().normalize();
+
+  if (ENEMY.attackCooldown > 0) ENEMY.attackCooldown -= dt;
+
+  switch (ENEMY.state) {
+
+    // ── Idle: detect player ──────────────────────────────────
+    case 'idle':
+      if (dist < ENEMY.detectRange) ENEMY.state = 'chase';
+      break;
+
+    // ── Chase: move toward player, switch to attack ──────────
+    case 'chase': {
+      if (dist > ENEMY.attackRange + 0.15) {
+        enemy.position.x += dirNorm.x * ENEMY.speed * dt;
+        enemy.position.z += dirNorm.z * ENEMY.speed * dt;
+        ENEMY.walkCycle  += dt * 7;
+      }
+      // Face player
+      const ta = Math.atan2(dirNorm.x, dirNorm.z);
+      let d    = ta - enemy.rotation.y;
+      while (d >  Math.PI) d -= 2*Math.PI;
+      while (d < -Math.PI) d += 2*Math.PI;
+      enemy.rotation.y += d * Math.min(1, ENEMY.turnSpeed * dt);
+
+      enemy.position.x = Math.max(-BOUND, Math.min(BOUND, enemy.position.x));
+      enemy.position.z = Math.max(-BOUND, Math.min(BOUND, enemy.position.z));
+
+      if (dist <= ENEMY.attackRange && ENEMY.attackCooldown <= 0) {
+        ENEMY.state      = 'attack';
+        ENEMY.stateTimer = 0;
+        ENEMY._hitLanded = false;
+      }
+      break;
+    }
+
+    // ── Attack: sword swing animation + hitbox ───────────────
+    case 'attack':
+      ENEMY.stateTimer += dt;
+      {
+        const t = ENEMY.stateTimer / ENEMY.attackDur;
+        if (t < 0.42) {
+          // Wind-up: raise sword
+          eSwordPivot.rotation.x = -t * 2.8;
+        } else {
+          // Strike: swing down fast
+          eSwordPivot.rotation.x = -1.18 + (t - 0.42) * 3.8;
+          // Hitbox live between 50%→90% of swing
+          if (t > 0.50 && t < 0.90 && !ENEMY._hitLanded) {
+            if (checkEnemyHitPlayer(1.95)) {
+              ENEMY._hitLanded = true;
+              hurtPlayer(ENEMY.attackDmg);
+            }
+          }
+        }
+      }
+      if (ENEMY.stateTimer >= ENEMY.attackDur) {
+        eSwordPivot.rotation.x = 0;
+        ENEMY._hitLanded       = false;
+        ENEMY.attackCooldown   = ENEMY.attackCooldownMax + Math.random() * 0.9;
+        ENEMY.state            = 'chase';
+      }
+      break;
+
+    // ── Recoil: hit stun, stumble back ───────────────────────
+    case 'recoil':
+      ENEMY.stateTimer -= dt;
+      // Stumble away from player
+      enemy.position.x -= dirNorm.x * 1.6 * dt;
+      enemy.position.z -= dirNorm.z * 1.6 * dt;
+      if (ENEMY.stateTimer <= 0) {
+        ENEMY.state = (dist < ENEMY.detectRange) ? 'chase' : 'idle';
+      }
+      break;
+  }
+
+  // ── Enemy walk animation ─────────────────────────────────
+  if (ENEMY.state === 'chase') {
+    const s = Math.sin(ENEMY.walkCycle);
+    eLThigh.rotation.x =  s * 0.42;
+    eRThigh.rotation.x = -s * 0.42;
+    eLShin.rotation.x  =  Math.max(0,-s)*0.48;
+    eRShin.rotation.x  =  Math.max(0, s)*0.48;
+    eLUArm.rotation.x  = -s * 0.25;
+    eRUArm.rotation.x  =  s * 0.25;
+  } else if (ENEMY.state === 'idle') {
+    eLThigh.rotation.x = eRThigh.rotation.x = 0;
+    eLShin.rotation.x  = eRShin.rotation.x  = 0;
+  }
+
+  // ── Restore hit-flash materials ──────────────────────────
+  if (ENEMY.hitFlashTimer > 0) {
+    ENEMY.hitFlashTimer -= dt;
+    if (ENEMY.hitFlashTimer <= 0) {
+      enemyMeshes.forEach(o => o.mesh.material = o.mat);
+    }
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   10. PLAYER ANIMATION  – walk, attack, block, roll
+   ═══════════════════════════════════════════════════════════════════ */
+
+function animatePlayer(dt, isMoving) {
+  const inAttack = COMBAT.attackPhase !== 'none';
+  const inBlock  = COMBAT.blocking;
+  const inRoll   = PLAYER.rolling;
+
+  // ── Walk cycle ───────────────────────────────────────────
+  if (isMoving && !inAttack && !inRoll && !inBlock) {
+    walkCycle += dt * 8;
+  } else if (!inAttack && !inRoll) {
+    walkCycle += dt * 1.2; // idle sway
+  }
+  const s = Math.sin(walkCycle);
+
+  if (isMoving && !inAttack && !inRoll && !inBlock) {
+    lThigh.rotation.x =  s * 0.45;
+    rThigh.rotation.x = -s * 0.45;
+    lShin.rotation.x  =  Math.max(0,-s)*0.50;
+    rShin.rotation.x  =  Math.max(0, s)*0.50;
+    lUArm.rotation.x  = -s * 0.30;
+    rUArm.rotation.x  =  s * 0.30;
+    torso.position.y  = 1.0  + Math.abs(s)*0.04;
+    head.position.y   = 1.55 + Math.abs(s)*0.04;
+  } else if (!inAttack && !inRoll) {
+    lThigh.rotation.x = rThigh.rotation.x = 0;
+    lShin.rotation.x  = rShin.rotation.x  = 0;
+    lUArm.rotation.x  = s*0.04;
+    rUArm.rotation.x  = s*0.04;
+    torso.position.y  = 1.0  + s*0.012;
+    head.position.y   = 1.55 + s*0.012;
+  }
+
+  // ── Block pose ────────────────────────────────────────────
+  if (inBlock) {
+    shieldPivot.rotation.x += (-0.3 - shieldPivot.rotation.x)*0.25;
+    shieldPivot.rotation.z += ( 0.2 - shieldPivot.rotation.z)*0.25;
+    lUArm.rotation.x       += (-0.5 - lUArm.rotation.x)*0.25;
+  } else {
+    shieldPivot.rotation.x += (0 - shieldPivot.rotation.x)*0.15;
+    shieldPivot.rotation.z += (0 - shieldPivot.rotation.z)*0.15;
+  }
+
+  // ── Attack animations ─────────────────────────────────────
+  if (inAttack) {
+    const t  = COMBAT.attackTimer;
+    const wu = (COMBAT.attackType==='heavy') ? COMBAT.heavyWindup   : COMBAT.lightWindup;
+    const ac = (COMBAT.attackType==='heavy') ? COMBAT.heavyActive   : COMBAT.lightActive;
+    const rc = (COMBAT.attackType==='heavy') ? COMBAT.heavyRecovery : COMBAT.lightRecovery;
+
+    if (COMBAT.attackPhase === 'windup') {
+      const p = t / wu;
+      const maxUp = (COMBAT.attackType==='heavy') ? 2.0 : 1.4;
+      swordPivot.rotation.x += (-p*maxUp  - swordPivot.rotation.x)*0.5;
+      rUArm.rotation.x      += (-p*0.8    - rUArm.rotation.x)*0.5;
+    } else if (COMBAT.attackPhase === 'active') {
+      const p = t / ac;
+      // Snap forward fast on the strike
+      swordPivot.rotation.x = -1.4 + p*3.4;
+      rUArm.rotation.x      = -0.8 + p*1.5;
+      torso.rotation.x      =  p*0.28;
+    } else if (COMBAT.attackPhase === 'recovery') {
+      const p = 1 - t/rc;
+      swordPivot.rotation.x = p*1.6;
+      rUArm.rotation.x      = p*0.5;
+      torso.rotation.x      = p*0.28;
+    }
+  } else {
+    // Ease everything back to rest
+    swordPivot.rotation.x += (0 - swordPivot.rotation.x)*0.18;
+    rUArm.rotation.x      += (0 - rUArm.rotation.x)*0.18;
+    torso.rotation.x      += (0 - torso.rotation.x)*0.18;
+  }
+
+  // ── Roll lean ────────────────────────────────────────────
+  if (inRoll) {
+    player.rotation.x = Math.sin(PLAYER.rollTimer/PLAYER.rollDuration * Math.PI)*0.65;
+  } else {
+    player.rotation.x = 0;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   11. HUD HELPERS
+   ═══════════════════════════════════════════════════════════════════ */
+
+const hpFill  = document.getElementById('hp-fill');
+const staFill = document.getElementById('sta-fill');
+const msgEl   = document.getElementById('msg');
+
+function updateHUD() {
+  hpFill.style.width  = Math.max(0, PLAYER.hp  / PLAYER.hpMax  * 100) + '%';
+  staFill.style.width = Math.max(0, PLAYER.sta / PLAYER.staMax * 100) + '%';
+}
+
+function updateEnemyHpBar() {
+  const pct = Math.max(0, ENEMY.hp / ENEMY.hpMax);
+  document.getElementById('enemy-hp-fill').style.width = (pct*100) + '%';
+  // Scale the 3D billboard proportionally
+  eHpBarFg.scale.x = Math.max(0.001, pct);
+}
+
+function showMessage(text, isVictory) {
+  msgEl.textContent = text;
+  msgEl.className   = isVictory ? 'visible victory' : 'visible';
+  setTimeout(() => msgEl.classList.remove('visible','victory'), 3000);
+}
+
+// Combat state HUD pills
+function updateCombatHUD() {
+  const csBlock  = document.getElementById('cs-block');
+  const csAttack = document.getElementById('cs-attack');
+  const csHeavy  = document.getElementById('cs-heavy');
+  const csRoll   = document.getElementById('cs-roll');
+  const csIframe = document.getElementById('cs-iframe');
+
+  csBlock.className  = COMBAT.blocking                       ? 'active' : '';
+  csAttack.className = (COMBAT.attackPhase==='active')       ? 'active' : '';
+  csHeavy.className  = (mouse.left && lmbHoldTime>=HEAVY_THRESH*0.55) ? 'active' : '';
+  csRoll.className   = PLAYER.rolling                        ? 'active' : '';
+
+  // I-frame window indicator
+  const inIframe = PLAYER.rolling &&
+    (PLAYER.rollTimer/PLAYER.rollDuration) > 0.10 &&
+    (PLAYER.rollTimer/PLAYER.rollDuration) < 0.85;
+  csIframe.className = inIframe ? 'danger' : '';
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   12. MAIN ANIMATE LOOP
+   ═══════════════════════════════════════════════════════════════════ */
+
+let lastTime = 0;
+
+function animate(ts) {
+  requestAnimationFrame(animate);
+  const dt = Math.min((ts - lastTime)/1000, 0.05);
+  lastTime  = ts;
+
+  // Pause all logic while cursor is unlocked
+  if (document.pointerLockElement !== canvas) {
+    renderer.render(scene, camera);
+    return;
+  }
+
+  handleInput(dt);       // movement + LMB/RMB detection
+  updateCombat(dt);      // attack FSM, block, hitboxes
+  updateEnemy(dt);       // enemy AI + its hitbox
+
+  const isMoving = moveDir.lengthSq() > 0.01 || PLAYER.rolling;
+  animatePlayer(dt, isMoving);
+
+  updateCamera();
+  billboardEnemyHud();
+
+  // Bonfire flicker
+  const fl = 0.92 + Math.sin(ts*0.012)*0.08 + Math.random()*0.04;
+  flame.scale.y  = fl;
+  flame2.scale.y = fl * 1.1;
+  flame.scale.x  = flame.scale.z  = 0.85 + Math.sin(ts*0.009)*0.15;
+  flame2.scale.x = flame2.scale.z = flame.scale.x * 0.6;
+
+  updateHUD();
+  updateCombatHUD();
+
+  renderer.render(scene, camera);
+}
+
+requestAnimationFrame(animate);
+
+/* ═══════════════════════════════════════════════════════════════════
+   EXTENSION POINTS (v3+)
+   ───────────────────────────────────────────────────────────────────
+   - parrySystem    : timed block right before hit = riposte
+   - lootSystem     : soul drops on enemy death
+   - enemies[]      : array for multi-enemy encounters
+   - Firebase       : ghost replays of other players' deaths
+   - Web Audio API  : sword clash, footsteps, death groan
+   - loadArea(id)   : door transitions to next arena
+   ═══════════════════════════════════════════════════════════════════ */
+</script>
+</body>
+</html>
