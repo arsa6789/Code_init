@@ -71,3 +71,19 @@
 // document.write(num1 - num2 + "<br>");
 // document.write("Quotient of" + " " + num1 + " "+ "and" +" " + num2 + " " + "is ");
 // document.write(num1 / num2);
+// let x;
+// let inVar = 5;
+// document.write("Variable declaration: " + x + "<br>");
+// document.write("Initial Variable: " + inVar + "<br>");
+// //incrementing inVar variable
+// ++inVar;
+// document.write("Incremented Value: " + inVar + "<br>");
+// // adding 7 to the variable
+// let addedValue = inVar + 7;
+// document.write("Value after addition is: " + addedValue + "<br>");
+// //decrementing the variable
+// --addedValue;
+// document.write("Decremented Value: " + addedValue + "<br>");
+// //reminder
+// let remValue = addedValue % 3;
+// document.write("let reminder is: " + remValue)
