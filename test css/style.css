@@ -1,0 +1,73 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    box-sizing: border-box;
+}
+
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+:root{
+    --font-text-color: #d6d6d6;
+    --border-color: #a9a9a9;
+    --font-size-desktop: 18px;
+    --font-size-mobile: 20px;
+}
+#outer{
+    width: 400px;
+    height: 400px;
+    background: url(premium_photo-1670148434900-5f0af77ba500.avif);
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#inner{
+    height: 250px;
+    width: 250px;
+    border-radius: 10px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(209, 209, 209, 0.2);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.1);
+    text-align: center;
+    padding-top: 50px;
+}
+.text{
+    font-size: var(--font-size-desktop);
+}
+button{
+    content: "";
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 10px 20px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+    animation: butn_hover 2s ease-in 0s;
+}
+@keyframes butn_hover {
+    from{
+    background-color: white;
+    border: none;
+    border-radius: 0px;
+    padding: 0px 0px;
+    overflow: scroll;
+    margin-top: 0rem;
+    }
+    to{
+    background-color: transparent;
+    border: 2px solid white;
+    border-radius: 10px;
+    padding: 10px 20px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+    animation-name: butn_hover;
+    }
+}
