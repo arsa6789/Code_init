@@ -69,6 +69,36 @@ A test website built using Bootstrap framework.
 - **Technologies**: HTML, CSS, Bootstrap
 - [View Project](./Test%20website%20made%20in%20Bootstrap/)
 
+### 14. Age-Calculator
+An age calculator application.
+- **Technologies**: HTML, CSS, JavaScript
+- [View Project](./Age-Calcualtor/)
+
+### 15. CSS Best Buttons
+Showcases the best CSS button styles.
+- **Technologies**: HTML
+- [View Project](./CSS%20Best%20Buttons/)
+
+### 16. Dashboard
+A dashboard interface.
+- **Technologies**: HTML, CSS, JavaScript
+- [View Project](./Dashboard/)
+
+### 17. Javascript Practice
+JavaScript practice exercises and examples.
+- **Technologies**: HTML, JavaScript
+- [View Project](./Javascript%20Practice/)
+
+### 18. Netflix Website
+A Netflix-like website clone.
+- **Technologies**: HTML, CSS, JavaScript
+- [View Project](./Netflix%20website/)
+
+### 19. Test CSS
+A project for testing CSS styles.
+- **Technologies**: HTML, CSS, JavaScript
+- [View Project](./test%20css/)
+
 ## Getting Started
 
 To view any project, navigate to the respective folder and open the `index.html` file in your web browser.

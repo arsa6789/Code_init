@@ -1,0 +1,25 @@
+<html>
+    <head>
+        <title>Web page</title>
+    </head>
+    <body>
+        <h1>Counter in javascript</h1>
+        <p>You counted to <span>0</span></p>
+        <p id="empTy"></p>
+        <button>Click me</button>
+        <script>
+            let aCell = document.getElementById("empTy");
+            let counter = 0;
+            function count(){
+                counter++;
+                document.querySelector("span").innerHTML = counter;
+
+                if (counter % 10 === 0){
+                    aCell.innerHTML = `Congrats: ${counter} counts`;
+                }
+            }
+
+            document.querySelector("button").onclick = count;
+        </script>
+    </body>
+</html>
