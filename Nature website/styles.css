@@ -1,0 +1,124 @@
+@import url("https://fonts.googleapis.com/css2?family=Sekuya&display=swap");
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Sekuya", sans-serif;
+}
+.cont {
+  display: flex;
+  justify-content: center;
+}
+.cont h2 {
+  top: 10rem;
+  position: absolute;
+  font: bolder;
+  font-size: 90px;
+  z-index: 3;
+}
+.sun {
+  position: absolute;
+  margin-top: 10rem;
+  width: 100px;
+  height: 100px;
+  background: orange; /* Core color */
+  border-radius: 50%; /* Makes it circular */
+}
+.suno {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 6.1rem;
+}
+.mountain-range {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  /* background: skyblue; */
+  overflow: hidden;
+  margin-top: 7.9rem;
+}
+
+.mountain {
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  /* Define the triangle shape */
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  background-color: #555; /* Default color */
+}
+
+.m1 {
+  left: -10%;
+  width: 50%;
+  height: 200px;
+  background-color: #7a7a7a;
+  z-index: 1;
+}
+
+.m2 {
+  left: 30%;
+  width: 50%;
+  height: 250px;
+  background-color: #666;
+  z-index: 2;
+}
+
+.m3 {
+  left: 60%;
+  width: 50%;
+  height: 180px;
+  background-color: #444;
+  z-index: 1;
+}
+
+.land {
+  background-color: #4caf50; /* Green color */
+  height: 100px; /* Height of the land */
+  width: 100%; /* Spans full width */
+  position: absolute;
+  bottom: 0; /* Places it at bottom */
+}
+.cloud1 {
+  position: absolute;
+  z-index: 3;
+  margin-top: 6rem;
+  animation: left-to-right 100s alternate infinite;
+}
+.cloud2 {
+  position: absolute;
+  right: 0;
+  margin-top: 7rem;
+  z-index: 2;
+  animation: right-left-to 100s alternate infinite;
+}
+.cloud3 {
+  position: absolute;
+  margin-top: 10rem;
+  z-index: 2;
+  animation: left-to-right 100s alternate infinite 5s;
+}
+.cloud4 {
+  position: absolute;
+  margin-top: 9rem;
+  right: 0;
+  z-index: 3;
+  animation: right-left-to 100s alternate infinite 5s;
+}
+@keyframes left-to-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(1200px);
+  }
+}
+@keyframes right-left-to {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-1200px);
+  }
+}
