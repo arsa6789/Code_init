@@ -29,6 +29,17 @@
                 <button id="actionBtn">Lock Answer</button>
             </div>
         </div>
+
+        <!-- NEW: JSON Bulk Importer Engine Panel -->
+        <div class="glass-panel">
+            <h2 class="creator-title">Bulk Import via JSON Matrix</h2>
+            <div class="form-group">
+                <label>JSON Data Object String</label>
+                <textarea id="jsonTextArea" rows="6" placeholder='{&#10;  "title": "Paper 3: Dynamic Physics SSC-II",&#10;  "questions": [&#10;    {&#10;      "q": "What is the unit of power?",&#10;      "o": ["Joule", "Watt", "Newton", "Pascal"],&#10;      "a": "B"&#10;    }&#10;  ]&#10;}' style="resize:vertical;font-family:monospace;font-size:0.9rem;"></textarea>
+            </div>
+            <button id="importJsonBtn" style="width:100%" class="utility-btn">Inject JSON Vectors into Builder Matrix</button>
+        </div>
+
         <div class="glass-panel">
             <h2 class="creator-title">Add Custom Exam Paper</h2>
             <div class="form-group">
@@ -62,7 +73,7 @@
                     <button id="pushQuestBtn" class="utility-btn" style="margin-bottom:20px">Push Question</button>
                 </div>
             </div>
-            <div id="stagingArea" style="margin-bottom:20px;color:var(--primary);font-size:0.95rem}"></div>
+            <div id="stagingArea" style="margin-bottom:20px;color:var(--primary);font-size:0.95rem;"></div>
             <button id="saveQuizBtn" style="width:100%">Compile & Save Examination Paper</button>
         </div>
     </div>
@@ -71,10 +82,8 @@
         import { initializeApp as _iA } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore as _gF, collection as _c, getDocs as _gD, doc as _d, setDoc as _sD } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Hexadecimal string decryption utility
         const _hx = _s => _s.match(/.{1,2}/g).map(_v => String.fromCharCode(parseInt(_v, 16))).join('');
 
-        // Obfuscated Database Strings & Settings
         const _cfg = {
             apiKey: _hx("41497a61537943396d674a7a6a67357641446550765f5264796855683748533563457031314641"),
             authDomain: _hx("7175697a2d31613138332e66697265626173656170702e636f6d"),
@@ -100,6 +109,7 @@
         const _qS = _sEL('quizSelect'), _lQB = _sEL('loadQuizBtn'), _qI = _sEL('quizInterface'), _qC = _sEL('questionsContainer');
         const _pB = _sEL('progressBar'), _pT = _sEL('progressText'), _pB_ = _sEL('prevBtn'), _aB = _sEL('actionBtn');
         const _pQB = _sEL('pushQuestBtn'), _sQB = _sEL('saveQuizBtn'), _stA = _sEL('stagingArea');
+        const _jTA = _sEL('jsonTextArea'), _iJB = _sEL('importJsonBtn');
 
         const _fbD = {
             "p1": { title: "Paper 1: Mathematics SSC-II (Version 2091)", questions: [{ q: "An equation, which remains unchanged when x is replaced by 1/x is called a/an:", o: ["Exponential Equation", "Reciprocal Equation", "Radical Equation", "Linear Equation"], a: "B" }, { q: "If α, β are the roots of the equation 4y² - 5y + 6 = 0, then the value of 1/(α²β) + 1/(αβ²) is:", o: ["5/4", "3/2", "5/6", "6/5"], a: "C" }, { q: "In which situation x varies directly as y:", o: ["x = 5/y", "xy = 7", "x = xy", "x = (3/11)y"], a: "D" }, { q: "The shape of partial fractions of (17x+5)/[(x-1)(x²-1)] are:", o: ["A/(x+1) + B/(x-1) + C/(x-1)²", "A/(x-1) + (Bx+C)/(x²-1)", "A/(x-1) + B/(x+1) + C/(x+1)²", "(Ax+B)/(x²-1) + C/(x-1)"], a: "A" }, { q: "If the following ordered pairs are equal (3-2a, b-1) = (a-7, 2b+5) then values of a and b are:", o: ["3/10, 6", "10/3, -6", "-10/3, 6", "-3/10, -6"], a: "B" }, { q: "In the set of data 41, 43, 47, 51, 57, 52, 59 median is:", o: ["51", "52", "47", "51.5"], a: "A" }, { q: "The reciprocal of arithmetic mean is called:", o: ["Geometric Mean", "Harmonic Mean", "Average", "Median"], a: "B" }, { q: "The arc length 'l' of a circle of radius r = 6 cm and central angle θ = 60° is:", o: ["3.1415", "4.7122", "6.283", "9.4245"], a: "C" }, { q: "In ΔABC if mBC=4cm, mAC=12cm, m∠C=120° then the length of projection x of AC on AB is:", o: ["3√3", "4√3", "6√3", "12√3"], a: "B" }, { q: "A line segment having both end points on circle and not passing through the Centre is:", o: ["Diameter", "Tangent", "Radius", "Chord"], a: "D" }, { q: "In the figure, the length of OQ is equal to: (Circle with triangle OPQ, where OP=5 and PQ=4)", o: ["3", "5", "6", "8"], a: "A" }, { q: "In the given figure m∠1 is 50°. What is the measure of ∠2:", o: ["25°", "50°", "75°", "100°"], a: "B" }, { q: "The centre of incircle is called:", o: ["Circum-centre", "E-centre", "In-centre", "Centroid"], a: "C" }, { q: "In the given figure 'O' is the centre of the circle, then the angle 'x' is: (Central angle x, inscribed 30°)", o: ["15°", "30°", "45°", "60°"], a: "D" }, { q: "If u/v = v/w = K, then u is equal to:", o: ["u = vK²", "u = v²K", "u = wK²", "u = w²K"], a: "C" }] },
@@ -231,6 +241,40 @@
             _asq.push({ q: _sV, o: [_aV, _bV, _cV, _dV], a: _cVl });
             _stA.textContent = `Staging Segment Memory Matrix: Loaded [ ${_asq.length} ] Structural Nodes.`;
             _sEL('newQuestText').value = ""; _sEL('optA').value = ""; _sEL('optB').value = ""; _sEL('optC').value = ""; _sEL('optD').value = ""; _sEL('correctOpt').value = "A";
+        });
+
+        // NEW: JSON Vector Injection Logic 
+        _iJB.addEventListener('click', () => {
+            const rawText = _jTA.value.trim();
+            if (!rawText) return alert("Validation Warning: JSON string cluster input field is empty.");
+            try {
+                const parsed = JSON.parse(rawText);
+                if (!parsed.questions || !Array.isArray(parsed.questions)) {
+                    throw new Error("Invalid structure. 'questions' node array missing.");
+                }
+                
+                let loadedCount = 0;
+                parsed.questions.forEach((item) => {
+                    if (item.q && Array.isArray(item.o) && item.o.length === 4 && item.a) {
+                        _asq.push({
+                            q: item.q.trim(),
+                            o: item.o.map(opt => opt.toString().trim()),
+                            a: item.a.toUpperCase().trim()
+                        });
+                        loadedCount++;
+                    }
+                });
+
+                if (parsed.title && parsed.title.trim()) {
+                    _sEL('newQuizTitle').value = parsed.title.trim();
+                }
+
+                _stA.textContent = `Staging Segment Memory Matrix: Loaded [ ${_asq.length} ] Structural Nodes.`;
+                _jTA.value = "";
+                alert(`Successfully parsed and loaded ${loadedCount} question profiles into current staging structure logs.`);
+            } catch (err) {
+                alert(`JSON Core Compilation Breakdown: ${err.message}. Ensure your payload strictly conforms to system database schema rules.`);
+            }
         });
 
         _sQB.addEventListener('click', async () => {
