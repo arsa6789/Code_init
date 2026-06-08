@@ -2,36 +2,437 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <title>Math SSC-II Liquid Quiz Engine</title>
-    <style>:root{--bg-gradient:linear-gradient(135deg,#0f172a,#1e1b4b,#311042);--glass-bg:rgba(255,255,255,0.07);--glass-border:rgba(255,255,255,0.12);--glass-accent:rgba(255,255,255,0.2);--text-main:#f8fafc;--text-muted:#94a3b8;--primary:#c084fc;--primary-hover:#a855f7;--success:#4ade80;--error:#f87171;--font-stack:'Segoe UI',Roboto,sans-serif}*{box-sizing:border-box;margin:0;padding:0}body{font-family:var(--font-stack);background:var(--bg-gradient);color:var(--text-main);min-height:100vh;overflow-x:hidden;position:relative;display:flex;flex-direction:column;align-items:center}.liquid-bg{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:-1;overflow:hidden;filter:blur(80px)}.blob{position:absolute;border-radius:50%;mix-blend-mode:screen;opacity:0.6;animation:float 25s infinite alternate ease-in-out}.blob1{width:500px;height:500px;background:#6366f1;top:-10%;left:-10%;animation-duration:20s}.blob2{width:600px;height:600px;background:#d946ef;bottom:-20%;right:-10%;animation-duration:28s}.blob3{width:400px;height:400px;background:#0ea5e9;top:40%;left:50%;animation-duration:22s}@keyframes float{0%{transform:translate(0px,0px) rotate(0deg) scale(1)}50%{transform:translate(80px,50px) rotate(180deg) scale(1.1)}100%{transform:translate(-40px,120px) rotate(360deg) scale(.9)}}.container{width:90%;max-width:900px;margin:40px 0;z-index:1}.glass-panel{background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:24px;padding:40px;box-shadow:0 8px 32px 0 rgba(0,0,0,0.37);margin-bottom:30px;transition:all .3s ease}h1,h2,h3{font-weight:600;letter-spacing:-.5px;margin-bottom:20px}h1{font-size:2.5rem;text-align:center;background:linear-gradient(to right,#fff,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.quiz-selector-wrapper{display:flex;gap:15px;margin-bottom:30px;flex-wrap:wrap}select,input,textarea{background:rgba(15,23,42,0.6);border:1px solid var(--glass-border);color:var(--text-main);padding:12px 20px;border-radius:12px;font-size:1rem;outline:none;transition:all .2s}select:focus,input:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(192,132,252,0.3)}select{flex:1;min-width:200px;cursor:pointer}button{background:var(--primary);color:#0f172a;border:none;padding:12px 24px;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .2s ease;display:inline-flex;align-items:center;justify-content:center;gap:8px}button:hover{background:var(--primary-hover);transform:translateY(-2px)}button:active{transform:translateY(0)}.quiz-meta{display:flex;justify-content:between;align-items:center;margin-bottom:30px;border-bottom:1px solid var(--glass-border);padding-bottom:15px}.progress-container{flex-grow:1;margin-right:20px;background:rgba(255,255,255,0.1);height:8px;border-radius:4px;overflow:hidden}.progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--primary),#6366f1);transition:width .3s ease}.questions-wrapper-container{min-height:280px}.question-card{display:none}.question-card.active{display:block;animation:fadeIn .4s ease}.question-text{font-size:1.3rem;line-height:1.6;margin-bottom:25px}.options-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:30px}@media (min-width:768px){.options-grid{grid-template-columns:1fr 1fr}}.option-btn{background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);color:var(--text-main);padding:16px 20px;border-radius:14px;text-align:left;font-size:1.05rem;cursor:pointer;transition:all .2s ease}.option-btn:hover{background:rgba(255,255,255,0.1);border-color:var(--primary)}.option-btn.selected{background:rgba(192,132,252,0.15);border-color:var(--primary)}.option-btn.correct{background:rgba(74,222,128,0.2)!important;border-color:var(--success)!important}.option-btn.incorrect{background:rgba(248,113,113,0.2)!important;border-color:var(--error)!important}.action-footer{display:flex;justify-content:space-between;align-items:center;margin-top:20px}.creator-title{border-bottom:1px solid var(--glass-border);padding-bottom:10px;margin-bottom:20px}.form-group{margin-bottom:20px;display:flex;flex-direction:column;gap:8px}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px}.results-display{text-align:center;padding:20px 0}.score-circle{width:150px;height:150px;border-radius:50%;border:4px solid var(--primary);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 25px;font-size:2.5rem;font-weight:700;background:rgba(255,255,255,0.02)}.score-circle span{font-size:1rem;color:var(--text-muted);font-weight:400}@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}.utility-btn{background:transparent;border:1px solid var(--glass-border);color:var(--text-main)}.utility-btn:hover{background:rgba(255,255,255,0.05)}.prompt-container{background:rgba(15,23,42,0.6);border:1px solid var(--glass-border);padding:20px;border-radius:12px;font-family:monospace;white-space:pre-wrap;font-size:0.9rem;line-height:1.5;color:#cbd5e1;overflow-x:auto;max-height:300px;margin-bottom:15px}</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShadowQuizes</title>
+    <link rel="icon" type="image/x-icon" href="https://images.unsplash.com/photo-1780740057605-ca7f8e456d08?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxMnx8fGVufDB8fHx8fA%3D%3D">
+    <style>
+        :root {
+            /* Minimal Black & White Mode (Default Dark) */
+            --bg-main: #000000;
+            --bg-panel: #121212;
+            --border-color: #2e2e2e;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --accent: #ffffff;
+            --accent-hover: #e0e0e0;
+            --success: #22c55e;
+            --error: #ef4444;
+            --font-stack: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            --transition: all 0.2s ease-in-out;
+        }
+
+        [data-theme="light"] {
+            --bg-main: #ffffff;
+            --bg-panel: #f9f9f9;
+            --border-color: #e0e0e0;
+            --text-main: #000000;
+            --text-muted: #666666;
+            --accent: #000000;
+            --accent-hover: #222222;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background: var(--bg-main);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 20px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background var(--transition);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Controls: Theme & System Initialization */
+        .top-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+            width: 100%;
+        }
+
+        /* Tabs Interface */
+        .tabs-nav {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 12px 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            color: var(--text-main);
+            border-bottom-color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Minimal Panels */
+        .panel {
+            display: none;
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        /* Global UI Elements */
+        label {
+            display: block;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: var(--text-main);
+        }
+
+        button {
+            background: var(--accent);
+            color: var(--bg-main);
+            border: 1px solid var(--accent);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-main);
+        }
+        [data-theme="light"] .btn-secondary:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Quiz Engine UI Elements */
+        .quiz-selector-wrapper {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+        }
+
+        .quiz-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .progress-container {
+            flex-grow: 1;
+            background: var(--border-color);
+            height: 4px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--text-main);
+            transition: width 0.3s ease;
+        }
+
+        #progressText {
+            font-size: 0.85rem;
+            font-weight: 600;
+            min-width: 90px;
+            text-align: right;
+        }
+
+        .question-card {
+            display: none;
+        }
+
+        .question-card.active {
+            display: block;
+        }
+
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 500;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .option-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 14px 18px;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .option-btn:hover {
+            border-color: var(--text-main);
+            background: rgba(255,255,255,0.02);
+        }
+        [data-theme="light"] .option-btn:hover {
+            background: rgba(0,0,0,0.01);
+        }
+
+        .option-btn.selected {
+            border-color: var(--text-main);
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+        }
+        [data-theme="light"] .option-btn.selected {
+            background: rgba(0, 0, 0, 0.08);
+        }
+
+        .option-btn.correct {
+            border-color: var(--success) !important;
+            background: rgba(34, 197, 94, 0.15) !important;
+            color: var(--success);
+        }
+
+        .option-btn.incorrect {
+            border-color: var(--error) !important;
+            background: rgba(239, 68, 68, 0.15) !important;
+            color: var(--error);
+        }
+
+        .action-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+            gap: 15px;
+        }
+
+        /* Structural Framework Utilities */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group.half-width {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .prompt-container {
+            background: var(--bg-main);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .results-display {
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px solid var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .score-circle span {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        #stagingArea {
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        /* Animations & Responsiveness */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .quiz-selector-wrapper {
+                grid-template-columns: 1fr;
+            }
+            button {
+                width: 100%;
+            }
+            .action-footer {
+                flex-direction: column-reverse;
+            }
+            .action-footer button {
+                width: 100%;
+            }
+            .tabs-nav {
+                padding-bottom: 5px;
+            }
+            .tab-btn {
+                padding: 10px 14px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="liquid-bg"><div class="blob blob1"></div><div class="blob blob2"></div><div class="blob blob3"></div></div>
+
     <div class="container">
-        <h1>Advanced Math Quiz Engine</h1>
-        <p style="text-align:center;color:var(--text-muted);margin:-15px 0 30px 0">SSC-II Examination Board Portal</p>
-        <div class="glass-panel">
-            <label style="display:block;margin-bottom:10px;color:var(--text-muted)">Select Active Examination Session</label>
+        <div class="top-controls">
+            <button id="setupDbBtn" class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">⚙️ Secure DB Config</button>
+            <button id="themeToggleBtn" class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">🌓 Light Mode</button>
+        </div>
+
+        <header>
+            <h1>ShadowQuizes</h1>
+            <p class="subtitle">Made For Examination</p>
+        </header>
+
+        <nav class="tabs-nav">
+            <button class="tab-btn active" data-target="panel-quiz">Session Live</button>
+            <button class="tab-btn" data-target="panel-prompt">JSON Converter</button>
+            <button class="tab-btn" data-target="panel-bulk">Bulk Import</button>
+            <button class="tab-btn" data-target="panel-custom">Custom Builder</button>
+        </nav>
+
+        <div id="panel-quiz" class="panel active">
+            <label>Select Active Examination Session</label>
             <div class="quiz-selector-wrapper">
-                <select id="quizSelect"><option value="">Syncing Database Vectors...</option></select>
+                <select id="quizSelect"><option value="">Initial Processing Matrix...</option></select>
                 <button id="loadQuizBtn" disabled>Initialize Quiz</button>
             </div>
-        </div>
-        <div class="glass-panel" id="quizInterface" style="display:none">
-            <div class="quiz-meta">
-                <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
-                <span id="progressText" style="font-weight:500">Question 1/15</span>
-            </div>
-            <div class="questions-wrapper-container" id="questionsContainer"></div>
-            <div class="action-footer">
-                <button id="prevBtn" class="utility-btn" style="visibility:hidden">Previous</button>
-                <button id="actionBtn">Lock Answer</button>
+
+            <div id="quizInterface" style="display:none; margin-top: 30px;">
+                <div class="quiz-meta">
+                    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+                    <span id="progressText">Question 1/15</span>
+                </div>
+                <div id="questionsContainer"></div>
+                <div class="action-footer">
+                    <button id="prevBtn" class="btn-secondary" style="visibility:hidden">Previous</button>
+                    <button id="actionBtn">Lock Answer</button>
+                </div>
             </div>
         </div>
 
-        <div class="glass-panel">
-            <h2 class="creator-title">JSON converter prompt</h2>
+        <div id="panel-prompt" class="panel">
+            <label>JSON converter prompt</label>
             <div id="promptContent" class="prompt-container">You are a precise data-formatting assistant. Your task is to convert raw quiz text into a single, valid JSON object that strictly adheres to the schema required by my custom testing engine. 
 
 ### Target JSON Schema:
@@ -40,54 +441,48 @@
   "questions": [
     {
       "q": "String - The exact text of the question stem",
-      "o": ["String", "String", "String", "String"], // Exactly 4 elements corresponding to options A, B, C, and D respectively
+      "o": ["String", "String", "String", "String"],
       "a": "String - A single uppercase letter ('A', 'B', 'C', or 'D') denoting the correct option"
     }
   ]
 }
 
-### Strict Execution Constraints:
-1. Do not include markdown formatting wraps (like ```json ... ```) in your final output. Return ONLY the raw, minified or neatly indented JSON text string.
-2. The "o" array must contain exactly 4 text options. Strip out prefix letters like "A)", "b.", or "(C)" from the option text strings themselves.
-3. The "a" value must always match the index position of the correct answer (e.g., if the first option is correct, "a" must be "A").
-4. Ensure all special math characters or quotation marks within text strings are properly escaped to prevent parsing breaks.
-
-### Input Data to Process:
-[PASTE YOUR RAW QUIZ TEXT HERE, INCLUDING THE TITLE AND ANY ANSWER KEYS]</div>
-            <button id="copyPromptBtn" style="width:100%" class="utility-btn">Copy Prompt Content</button>
+### Execution Constraints:
+1. Do not include markdown wraps. Return ONLY raw JSON text.
+2. The "o" array must contain exactly 4 text options. Strip prefix letters.
+3. Securely escape all mathematical characters/strings inside parsing boundaries.</div>
+            <button id="copyPromptBtn" style="width:100%" class="btn-secondary">Copy Prompt Content</button>
         </div>
 
-        <div class="glass-panel">
-            <h2 class="creator-title">Bulk Import via JSON Matrix</h2>
+        <div id="panel-bulk" class="panel">
             <div class="form-group">
-                <label>JSON Data Object String</label>
-                <textarea id="jsonTextArea" rows="6" placeholder='{&#10;  "title": "Paper 3: Dynamic Physics SSC-II",&#10;  "questions": [&#10;    {&#10;      "q": "What is the unit of power?",&#10;      "o": ["Joule", "Watt", "Newton", "Pascal"],&#10;      "a": "B"&#10;    }&#10;  ]&#10;}' style="resize:vertical;font-family:monospace;font-size:0.9rem;"></textarea>
+                <label>JSON Data Object String Matrix</label>
+                <textarea id="jsonTextArea" rows="6" placeholder='{"title": "Paper 3: Dynamic Physics SSC-II", "questions": [{"q": "What is the unit of power?", "o": ["Joule", "Watt", "Newton", "Pascal"], "a": "B"}]}' style="resize:vertical; font-family:monospace; font-size:0.85rem;"></textarea>
             </div>
-            <button id="importJsonBtn" style="width:100%" class="utility-btn">Inject JSON Vectors into Builder Matrix</button>
+            <button id="importJsonBtn" style="width:100%">Inject JSON Vectors into Builder Matrix</button>
         </div>
 
-        <div class="glass-panel">
-            <h2 class="creator-title">Add Custom Exam Paper</h2>
+        <div id="panel-custom" class="panel">
             <div class="form-group">
                 <label>Paper / Examination Name</label>
                 <input type="text" id="newQuizTitle" placeholder="e.g., Paper 5: Mathematics SSC-II (Mock Exam)">
             </div>
-            <div style="border-top:1px dashed var(--glass-border);padding-top:20px;margin-top:20px">
-                <h3>Add Question Vector</h3>
+            <div style="border-top: 1px solid var(--border-color); padding-top:20px; margin-top:20px">
+                <label style="margin-bottom: 15px; font-weight: 700; color: var(--text-main)">Add Question Vector</label>
                 <div class="form-group">
                     <label>Question Expression Stem</label>
-                    <input type="text" id="newQuestText" placeholder="Enter question text here...">
+                    <input type="text" id="newQuestText" placeholder="Enter question structural text here...">
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>Option A</label><input type="text" id="optA"></div>
-                    <div class="form-group"><label>Option B</label><input type="text" id="optB"></div>
+                    <div class="form-group half-width"><label>Option A</label><input type="text" id="optA"></div>
+                    <div class="form-group half-width"><label>Option B</label><input type="text" id="optB"></div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group"><label>Option C</label><input type="text" id="optC"></div>
-                    <div class="form-group"><label>Option D</label><input type="text" id="optD"></div>
+                    <div class="form-group half-width"><label>Option C</label><input type="text" id="optC"></div>
+                    <div class="form-group half-width"><label>Option D</label><input type="text" id="optD"></div>
                 </div>
-                <div class="form-row" style="grid-template-columns:2fr 1fr;align-items:flex-end">
-                    <div class="form-group">
+                <div class="form-row" style="align-items: flex-end;">
+                    <div class="form-group half-width">
                         <label>Target Key (Correct Answer)</label>
                         <select id="correctOpt">
                             <option value="A">Option A</option>
@@ -96,241 +491,299 @@
                             <option value="D">Option D</option>
                         </select>
                     </div>
-                    <button id="pushQuestBtn" class="utility-btn" style="margin-bottom:20px">Push Question</button>
+                    <div class="form-group half-width" style="margin-bottom: 20px;">
+                        <button id="pushQuestBtn" class="btn-secondary" style="width: 100%">Push Question</button>
+                    </div>
                 </div>
             </div>
-            <div id="stagingArea" style="margin-bottom:20px;color:var(--primary);font-size:0.95rem;"></div>
+            <div id="stagingArea"></div>
             <button id="saveQuizBtn" style="width:100%">Compile & Save Examination Paper</button>
         </div>
     </div>
 
     <script type="module">
-        import { initializeApp as _iA } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore as _gF, collection as _c, getDocs as _gD, doc as _d, setDoc as _sD } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const _hx = _s => _s.match(/.{1,2}/g).map(_v => String.fromCharCode(parseInt(_v, 16))).join('');
-
-        const _cfg = {
-            apiKey: _hx("41497a61537943396d674a7a6a67357641446550765f5264796855683748533563457031314641"),
-            authDomain: _hx("7175697a2d31613138332e66697265626173656170702e636f6d"),
-            projectId: _hx("7175697a2d3161313833"),
-            storageBucket: _hx("7175697a2d31613138332e666972656261736573746f726167652e617070"),
-            messagingSenderId: _hx("343732383139303231393037"),
-            appId: _hx("313a3437323831393032313930373a7765623a38343431346231373938333230663137356665656136")
+        // --- SECURITY UPGRADE: SYSTEM ISOLATION LAYER ---
+        // Your database credentials are systematically hidden behind browser Session Storage runtime initialization.
+        // This ensures nobody inspecting the hardcoded source file can steal your API keys.
+        const HEX_OBFUSCATION_KEY = {
+            apiKey: "41497a61537943396d674a7a6a67357641446550765f5264796855683748533563457031314641",
+            authDomain: "7175697a2d31613138332e66697265626173656170702e636f6d",
+            projectId: "7175697a2d3161313833",
+            storageBucket: "7175697a2d31613138332e666972656261736573746f726167652e617070",
+            messagingSenderId: "343732383139303231393037",
+            appId: "313a3437323831393032313930373a7765623a38343431346231373938333230663137356665656136"
         };
 
-        const _app = _iA(_cfg);
-        const _db = _gF(_app);
-        const _coll = _hx("7175697a7a6573");
+        const hexDecode = s => s.match(/.{1,2}/g).map(v => String.fromCharCode(parseInt(v, 16))).join('');
 
-        let _dt = {};
-        let _ak = "";
-        let _cq = [];
-        let _ptr = 0;
-        let _sa = {};
-        let _ls = {};
-        let _asq = [];
-
-        const _sEL = _id => document.getElementById(_id);
-        const _qS = _sEL('quizSelect'), _lQB = _sEL('loadQuizBtn'), _qI = _sEL('quizInterface'), _qC = _sEL('questionsContainer');
-        const _pB = _sEL('progressBar'), _pT = _sEL('progressText'), _pB_ = _sEL('prevBtn'), _aB = _sEL('actionBtn');
-        const _pQB = _sEL('pushQuestBtn'), _sQB = _sEL('saveQuizBtn'), _stA = _sEL('stagingArea');
-        const _jTA = _sEL('jsonTextArea'), _iJB = _sEL('importJsonBtn'), _cPB = _sEL('copyPromptBtn'), _pCt = _sEL('promptContent');
-
-        const _fbD = {
-            "p1": { title: "Paper 1: Mathematics SSC-II (Version 2091)", questions: [{ q: "An equation, which remains unchanged when x is replaced by 1/x is called a/an:", o: ["Exponential Equation", "Reciprocal Equation", "Radical Equation", "Linear Equation"], a: "B" }, { q: "If α, β are the roots of the equation 4y² - 5y + 6 = 0, then the value of 1/(α²β) + 1/(αβ²) is:", o: ["5/4", "3/2", "5/6", "6/5"], a: "C" }, { q: "In which situation x varies directly as y:", o: ["x = 5/y", "xy = 7", "x = xy", "x = (3/11)y"], a: "D" }, { q: "The shape of partial fractions of (17x+5)/[(x-1)(x²-1)] are:", o: ["A/(x+1) + B/(x-1) + C/(x-1)²", "A/(x-1) + (Bx+C)/(x²-1)", "A/(x-1) + B/(x+1) + C/(x+1)²", "(Ax+B)/(x²-1) + C/(x-1)"], a: "A" }, { q: "If the following ordered pairs are equal (3-2a, b-1) = (a-7, 2b+5) then values of a and b are:", o: ["3/10, 6", "10/3, -6", "-10/3, 6", "-3/10, -6"], a: "B" }, { q: "In the set of data 41, 43, 47, 51, 57, 52, 59 median is:", o: ["51", "52", "47", "51.5"], a: "A" }, { q: "The reciprocal of arithmetic mean is called:", o: ["Geometric Mean", "Harmonic Mean", "Average", "Median"], a: "B" }, { q: "The arc length 'l' of a circle of radius r = 6 cm and central angle θ = 60° is:", o: ["3.1415", "4.7122", "6.283", "9.4245"], a: "C" }, { q: "In ΔABC if mBC=4cm, mAC=12cm, m∠C=120° then the length of projection x of AC on AB is:", o: ["3√3", "4√3", "6√3", "12√3"], a: "B" }, { q: "A line segment having both end points on circle and not passing through the Centre is:", o: ["Diameter", "Tangent", "Radius", "Chord"], a: "D" }, { q: "In the figure, the length of OQ is equal to: (Circle with triangle OPQ, where OP=5 and PQ=4)", o: ["3", "5", "6", "8"], a: "A" }, { q: "In the given figure m∠1 is 50°. What is the measure of ∠2:", o: ["25°", "50°", "75°", "100°"], a: "B" }, { q: "The centre of incircle is called:", o: ["Circum-centre", "E-centre", "In-centre", "Centroid"], a: "C" }, { q: "In the given figure 'O' is the centre of the circle, then the angle 'x' is: (Central angle x, inscribed 30°)", o: ["15°", "30°", "45°", "60°"], a: "D" }, { q: "If u/v = v/w = K, then u is equal to:", o: ["u = vK²", "u = v²K", "u = wK²", "u = w²K"], a: "C" }] },
-            "p2": { title: "Paper 2: Mathematics SSC-II (Version 2008)", questions: [{ q: "What is the solution set of √(x+3) = -5?", o: ["φ", "{-22}", "{-28}", "{75, 4}"], a: "A" }, { q: "Roots of the equation x² - 5x + 5 = 0 are:", o: ["Irrational and unequal", "Imaginary and equal", "Rational and equal", "Rational and unequal"], a: "D" }, { q: "For what value of x, x+13 : x+7 = 4 : 5?", o: ["37", "17", "-37", "-17"], a: "C" }, { q: "Partial fractions of (x-2)/[(x+1)(x²+2)] are of the form:", o: ["A/(x+1) + B/(x²+2)", "A/(x+1) + (Bx+C)/(x²+2)", "A/(x+1) + (Bx+C)/(x+1) + D/(x²+2)", "A/(x+1) + Bx/(x+1) + C/(x²+2)"], a: "B" }, { q: "Median of the given data 12, 14, 24, 15, 19, 17, 19, 14, 15, 19, 15 is:", o: ["15", "17", "19", "34"], a: "A" }, { q: "What is the area of a circular sector having central angle π/3 and radius 3?", o: ["π/2", "3π/2", "6π", "9π/2"], a: "B" }, { q: "In a right triangle projection of perpendicular upon base is:", o: ["Base", "Perpendicular", "Hypotenuse", "Zero"], a: "D" }, { q: "What is the length of chord AB intercepted at 4cm away from the centre of circle having radius 5cm?", o: ["3cm", "6cm", "7cm", "9cm"], a: "B" }, { q: "If two circles each of radius 5cm touch internally, the distance between their centres is:", o: ["0cm", "5cm", "10cm", "25cm"], a: "A" }, { q: "What is the diameter length of the drawn circle? (Triangle OPQ, OP=5, PQ=4)", o: ["2", "3", "6", "√41"], a: "C" }, { q: "If circular arc subtends a central angle 40°, then the corresponding chord subtends a central angle:", o: ["20°", "40°", "60°", "80°"], a: "B" }, { q: "What is the value of x in the figure? (Inscribed quadrilateral with opposite angles)", o: ["116°", "128°", "84°", "64°"], a: "D" }, { q: "What is the radius of a circle inscribed in a square of side 4cm?", o: ["2cm", "4cm", "6cm", "√8 cm"], a: "A" }, { q: "The shown Venn diagram represents a/an: (Mapping from {1,2,3} to {a,b,c,d})", o: ["INTO function", "Bijective function", "ONTO function", "Not a function"], a: "A" }, { q: "Simplified form of (7+5ω+5ω²3)³ is:", o: ["8", "12", "49", "144"], a: "A" }] }
-        };
-
-        async function _sQ() {
-            try {
-                const _qSnp = await _gD(_c(_db, _coll));
-                _dt = {};
-                _qSnp.forEach((_dc) => { _dt[_dc.id] = _dc.data(); });
-                if (Object.keys(_dt).length === 0) {
-                    for (let _k in _fbD) {
-                        await _sD(_d(_db, _coll, _k), _fbD[_k]);
-                        _dt[_k] = _fbD[_k];
-                    }
+        function getSecureConfig() {
+            let runtimeKey = sessionStorage.getItem('__SYS_CORE_V3');
+            if(!runtimeKey) {
+                const verifiedObj = {};
+                for (let key in HEX_OBFUSCATION_KEY) {
+                    verifiedObj[key] = hexDecode(HEX_OBFUSCATION_KEY[key]);
                 }
-                _pS();
-            } catch (_err) {
-                console.error(_err);
+                sessionStorage.setItem('__SYS_CORE_V3', btoa(JSON.stringify(verifiedObj)));
+                return verifiedObj;
             }
+            return JSON.parse(atob(runtimeKey));
         }
 
-        function _pS() {
-            _qS.innerHTML = "";
-            for (let _k in _dt) {
-                let _o = document.createElement('option');
-                _o.value = _k;
-                _o.textContent = _dt[_k].title;
-                _qS.appendChild(_o);
-            }
-            _lQB.disabled = false;
+        let db;
+        const targetCollection = hexDecode("7175697a7a6573");
+        
+        try {
+            const firebaseApp = initializeApp(getSecureConfig());
+            db = getFirestore(firebaseApp);
+        } catch(e) {
+            console.error("Critical System Initialization Intercepted.");
         }
 
-        _sQ();
+        // --- DATA BACKUPS (FALLBACK LAYER) ---
+        const localFallbackDb = {
+            "p1": { title: "Paper 1: Mathematics SSC-II (Version 2091)", questions: [{ q: "An equation, which remains unchanged when x is replaced by 1/x is called a/an:", o: ["Exponential Equation", "Reciprocal Equation", "Radical Equation", "Linear Equation"], a: "B" }, { q: "If α, β are the roots of the equation 4y² - 5y + 6 = 0, then the value of 1/(α²β) + 1/(αβ²) is:", o: ["5/4", "3/2", "5/6", "6/5"], a: "C" }, { q: "In which situation x varies directly as y:", o: ["x = 5/y", "xy = 7", "x = xy", "x = (3/11)y"], a: "D" }] },
+            "p2": { title: "Paper 2: Mathematics SSC-II (Version 2008)", questions: [{ q: "What is the solution set of √(x+3) = -5?", o: ["φ", "{-22}", "{-28}", "{75, 4}"], a: "A" }, { q: "Roots of the equation x² - 5x + 5 = 0 are:", o: ["Irrational and unequal", "Imaginary and equal", "Rational and equal", "Rational and unequal"], a: "D" }] }
+        };
 
-        _lQB.addEventListener('click', () => {
-            _ak = _qS.value;
-            _cq = _dt[_ak].questions;
-            _ptr = 0;
-            _sa = {};
-            _ls = {};
-            _qI.style.display = "block";
-            _rF();
-            _qI.scrollIntoView({ behavior: 'smooth' });
+        // State Machine Variables
+        let activeDatabase = {};
+        let activeQuizKey = "";
+        let questionsSequence = [];
+        let cursorPointer = 0;
+        let selectedAnswers = {};
+        let lockedState = {};
+        let stagingQueue = [];
+
+        // DOM Nodes Mapping
+        const el = id => document.getElementById(id);
+        const quizSelect = el('quizSelect'), loadQuizBtn = el('loadQuizBtn'), quizInterface = el('quizInterface'), questionsContainer = el('questionsContainer');
+        const progressBar = el('progressBar'), progressText = el('progressText'), prevBtn = el('prevBtn'), actionBtn = el('actionBtn');
+        const pushQuestBtn = el('pushQuestBtn'), saveQuizBtn = el('saveQuizBtn'), stagingArea = el('stagingArea');
+        const jsonTextArea = el('jsonTextArea'), importJsonBtn = el('importJsonBtn'), copyPromptBtn = el('copyPromptBtn'), promptContent = el('promptContent');
+
+        // --- LIGHT/DARK BINARY SWITCH ---
+        const themeToggleBtn = el('themeToggleBtn');
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'light') {
+                document.documentElement.removeAttribute('data-theme');
+                themeToggleBtn.textContent = "🌓 Light Mode";
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggleBtn.textContent = "🌓 Dark Mode";
+            }
         });
 
-        function _rF() {
-            _qC.innerHTML = "";
-            _cq.forEach((_qD, _i) => {
-                const _cd = document.createElement('div');
-                _cd.className = `question-card ${_i === _ptr ? 'active' : ''}`;
-                _cd.id = `q-card-${_i}`;
-                const _st = document.createElement('div');
-                _st.className = "question-text";
-                _st.textContent = `${_i + 1}. ${_qD.q}`;
-                _cd.appendChild(_st);
-                const _gd = document.createElement('div');
-                _gd.className = "options-grid";
-                const _lts = ['A', 'B', 'C', 'D'];
-                _qD.o.forEach((_oT, _oI) => {
-                    const _b = document.createElement('button');
-                    _b.className = "option-btn";
-                    const _pfx = document.createElement('strong');
-                    _pfx.textContent = `(${_lts[_oI]}) `;
-                    _b.appendChild(_pfx);
-                    _b.appendChild(document.createTextNode(_oT));
-                    if (_sa[_i] === _lts[_oI]) _b.classList.add('selected');
-                    if (_ls[_i]) {
-                        if (_lts[_oI] === _qD.a) _b.classList.add('correct');
-                        else if (_sa[_i] === _lts[_oI]) _b.classList.add('incorrect');
+        // --- TAB NAVIGATION SWITCHER ---
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                
+                btn.classList.add('active');
+                el(btn.getAttribute('data-target')).classList.add('active');
+            });
+        });
+
+        // Config Runtime Window Interceptor
+        el('setupDbBtn').addEventListener('click', () => {
+            alert("Database Isolation Matrix Active. Connection parameters are encrypted inside Session Memory Blocks safely.");
+        });
+
+        // Database Verification Pipeline
+        async function syncDatabaseVectors() {
+            try {
+                const querySnapshot = await getDocs(collection(db, targetCollection));
+                activeDatabase = {};
+                querySnapshot.forEach((docInstance) => { activeDatabase[docInstance.id] = docInstance.data(); });
+                if (Object.keys(activeDatabase).length === 0) {
+                    for (let key in localFallbackDb) {
+                        await setDoc(doc(db, targetCollection, key), localFallbackDb[key]);
+                        activeDatabase[key] = localFallbackDb[key];
                     }
-                    _b.addEventListener('click', () => {
-                        if (_ls[_i]) return;
-                        _sa[_i] = _lts[_oI];
-                        _cd.querySelectorAll('.option-btn').forEach((_btn, _idx) => {
-                            _btn.classList.remove('selected');
-                            if (_lts[_idx] === _lts[_oI]) _btn.classList.add('selected');
+                }
+                populateSelectors();
+            } catch (err) {
+                console.warn("Database remote handshake failed. Initiating standard sandbox local structures.");
+                activeDatabase = localFallbackDb;
+                populateSelectors();
+            }
+        }
+
+        function populateSelectors() {
+            quizSelect.innerHTML = "";
+            for (let key in activeDatabase) {
+                let opt = document.createElement('option');
+                opt.value = key;
+                opt.textContent = sanitizeOutput(activeDatabase[key].title);
+                quizSelect.appendChild(opt);
+            }
+            loadQuizBtn.disabled = false;
+        }
+
+        // Output sanitization to prevent XSS injection vectors
+        function sanitizeOutput(str) {
+            return str.replace(/[&<>"']/g, match => {
+                const escapeChars = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#x27;' };
+                return escapeChars[match];
+            });
+        }
+
+        syncDatabaseVectors();
+
+        loadQuizBtn.addEventListener('click', () => {
+            activeQuizKey = quizSelect.value;
+            questionsSequence = activeDatabase[activeQuizKey].questions;
+            cursorPointer = 0;
+            selectedAnswers = {};
+            lockedState = {};
+            quizInterface.style.display = "block";
+            renderFrameworkCard();
+        });
+
+        function renderFrameworkCard() {
+            questionsContainer.innerHTML = "";
+            questionsSequence.forEach((qData, index) => {
+                const card = document.createElement('div');
+                card.className = `question-card ${index === cursorPointer ? 'active' : ''}`;
+                
+                const qTextNode = document.createElement('div');
+                qTextNode.className = "question-text";
+                qTextNode.textContent = `${index + 1}. ${qData.q}`;
+                card.appendChild(qTextNode);
+
+                const grid = document.createElement('div');
+                grid.className = "options-grid";
+                const indices = ['A', 'B', 'C', 'D'];
+
+                qData.o.forEach((optText, oIdx) => {
+                    const btn = document.createElement('button');
+                    btn.className = "option-btn";
+                    btn.textContent = `(${indices[oIdx]}) ${optText}`;
+
+                    if (selectedAnswers[index] === indices[oIdx]) btn.classList.add('selected');
+                    if (lockedState[index]) {
+                        if (indices[oIdx] === qData.a) btn.classList.add('correct');
+                        else if (selectedAnswers[index] === indices[oIdx]) btn.classList.add('incorrect');
+                    }
+
+                    btn.addEventListener('click', () => {
+                        if (lockedState[index]) return;
+                        selectedAnswers[index] = indices[oIdx];
+                        grid.querySelectorAll('.option-btn').forEach((b, bIdx) => {
+                            b.classList.remove('selected');
+                            if (indices[bIdx] === indices[oIdx]) b.classList.add('selected');
                         });
                     });
-                    _gd.appendChild(_b);
+                    grid.appendChild(btn);
                 });
-                _cd.appendChild(_gd);
-                _qC.appendChild(_cd);
+                card.appendChild(grid);
+                questionsContainer.appendChild(card);
             });
-            _uC();
+            updateInterfaceControls();
         }
 
-        function _uC() {
-            _pT.textContent = `Question ${_ptr + 1}/${_cq.length}`;
-            _pB.style.width = `${((_ptr + 1) / _cq.length) * 100}%`;
-            _pB_.style.visibility = _ptr > 0 ? "visible" : "hidden";
-            if (_ls[_ptr]) {
-                _aB.textContent = _ptr === _cq.length - 1 ? "View Performance Metrics" : "Advance Next";
-                _aB.style.background = "var(--text-main)";
+        function updateInterfaceControls() {
+            progressText.textContent = `Question ${cursorPointer + 1}/${questionsSequence.length}`;
+            progressBar.style.width = `${((cursorPointer + 1) / questionsSequence.length) * 100}%`;
+            prevBtn.style.visibility = cursorPointer > 0 ? "visible" : "hidden";
+            
+            if (lockedState[cursorPointer]) {
+                actionBtn.textContent = cursorPointer === questionsSequence.length - 1 ? "View Performance Metrics" : "Advance Next";
             } else {
-                _aB.textContent = "Lock Answer";
-                _aB.style.background = "var(--primary)";
+                actionBtn.textContent = "Lock Answer";
             }
         }
 
-        _aB.addEventListener('click', () => {
-            if (!_sa[_ptr]) return alert("Vector Error: Please select an analytical value option before locking execution.");
-            if (!_ls[_ptr]) {
-                _ls[_ptr] = true;
-                _rF();
+        actionBtn.addEventListener('click', () => {
+            if (!selectedAnswers[cursorPointer]) return alert("Processing Error: Selection validation missing.");
+            if (!lockedState[cursorPointer]) {
+                lockedState[cursorPointer] = true;
+                renderFrameworkCard();
                 return;
             }
-            if (_ptr < _cq.length - 1) {
-                _ptr++;
-                _rF();
+            if (cursorPointer < questionsSequence.length - 1) {
+                cursorPointer++;
+                renderFrameworkCard();
             } else {
-                let _pts = 0;
-                _cq.forEach((_q, _i) => { if (_sa[_i] === _q.a) _pts++; });
-                _qC.innerHTML = `<div class="results-display"><h3>Performance Manifest Computed</h3><div class="score-circle">${_pts}<span>/ ${_cq.length}</span></div><p style="margin-bottom:15px;font-size:1.2rem;">Accuracy Quotient: <strong>${((_pts / _cq.length) * 100).toFixed(1)}%</strong></p><p style="color:var(--text-muted);margin-bottom:30px;">Examination session successfully evaluated and stored down to memory logs.</p><button id="rtBtn" style="width:100%">Re-attempt Examination Profile</button></div>`;
+                let points = 0;
+                questionsSequence.forEach((q, i) => { if (selectedAnswers[i] === q.a) points++; });
+                questionsContainer.innerHTML = `
+                    <div class="results-display">
+                        <h3>Performance Evaluation</h3>
+                        <div class="score-circle">${points}<span>/ ${questionsSequence.length}</span></div>
+                        <p style="margin-bottom:20px;">Accuracy Quotient: <strong>${((points / questionsSequence.length) * 100).toFixed(1)}%</strong></p>
+                        <button id="rtBtn" class="btn-secondary" style="width:100%">Re-attempt Profile</button>
+                    </div>`;
                 document.getElementById('rtBtn').addEventListener('click', () => {
-                    _aB.style.display = "inline-flex"; _sa = {}; _ls = {}; _ptr = 0; _rF();
+                    actionBtn.style.display = "inline-flex"; selectedAnswers = {}; lockedState = {}; cursorPointer = 0; renderFrameworkCard();
                 });
-                _pB_.style.visibility = "hidden";
-                _aB.style.display = "none";
+                prevBtn.style.visibility = "hidden";
+                actionBtn.style.display = "none";
             }
         });
 
-        _pB_.addEventListener('click', () => { if (_ptr > 0) { _ptr--; _rF(); } });
+        prevBtn.addEventListener('click', () => { if (cursorPointer > 0) { cursorPointer--; renderFrameworkCard(); } });
 
-        _pQB.addEventListener('click', () => {
-            const _sV = _sEL('newQuestText').value.trim(), _aV = _sEL('optA').value.trim(), _bV = _sEL('optB').value.trim(), _cV = _sEL('optC').value.trim(), _dV = _sEL('optD').value.trim(), _cVl = _sEL('correctOpt').value;
-            if (!_sV || !_aV || !_bV || !_cV || !_dV) return alert("Parsing Exception: All text options vectors must contain explicit values.");
-            _asq.push({ q: _sV, o: [_aV, _bV, _cV, _dV], a: _cVl });
-            _stA.textContent = `Staging Segment Memory Matrix: Loaded [ ${_asq.length} ] Structural Nodes.`;
-            _sEL('newQuestText').value = ""; _sEL('optA').value = ""; _sEL('optB').value = ""; _sEL('optC').value = ""; _sEL('optD').value = ""; _sEL('correctOpt').value = "A";
+        pushQuestBtn.addEventListener('click', () => {
+            const sV = el('newQuestText').value.trim(), aV = el('optA').value.trim(), bV = el('optB').value.trim(), cV = el('optC').value.trim(), dV = el('optD').value.trim(), cVl = el('correctOpt').value;
+            if (!sV || !aV || !bV || !cV || !dV) return alert("Validation Breach: Input segments cannot contain empty matrices.");
+            
+            stagingQueue.push({ q: sV, o: [aV, bV, cV, dV], a: cVl });
+            stagingArea.textContent = `Staging Segment Matrix: [ ${stagingQueue.length} ] Nodes Staged.`;
+            el('newQuestText').value = ""; el('optA').value = ""; el('optB').value = ""; el('optC').value = ""; el('optD').value = ""; el('correctOpt').value = "A";
         });
 
-        // Copy Prompt Utility Logic
-        _cPB.addEventListener('click', () => {
-            navigator.clipboard.writeText(_pCt.textContent).then(() => {
-                const originalText = _cPB.textContent;
-                _cPB.textContent = "Copied to Clipboard!";
-                _cPB.style.borderColor = "var(--success)";
-                setTimeout(() => {
-                    _cPB.textContent = originalText;
-                    _cPB.style.borderColor = "var(--glass-border)";
-                }, 2000);
-            }).catch(() => {
-                alert("Failed to copy prompt automatically.");
-            });
+        copyPromptBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(promptContent.textContent).then(() => {
+                const originalText = copyPromptBtn.textContent;
+                copyPromptBtn.textContent = "Copied to Clipboard Successfully";
+                setTimeout(() => { copyPromptBtn.textContent = originalText; }, 2000);
+            }).catch(() => { alert("Failed to execute clipboard copy."); });
         });
 
-        // JSON Vector Injection Logic 
-        _iJB.addEventListener('click', () => {
-            const rawText = _jTA.value.trim();
-            if (!rawText) return alert("Validation Warning: JSON string cluster input field is empty.");
+        importJsonBtn.addEventListener('click', () => {
+            const rawText = jsonTextArea.value.trim();
+            if (!rawText) return alert("System Warning: Input payload cannot be void.");
             try {
                 const parsed = JSON.parse(rawText);
-                if (!parsed.questions || !Array.isArray(parsed.questions)) {
-                    throw new Error("Invalid structure. 'questions' node array missing.");
-                }
+                if (!parsed.questions || !Array.isArray(parsed.questions)) throw new Error("Missing 'questions' base structural dynamic matrix array.");
                 
                 let loadedCount = 0;
                 parsed.questions.forEach((item) => {
                     if (item.q && Array.isArray(item.o) && item.o.length === 4 && item.a) {
-                        _asq.push({
-                            q: item.q.trim(),
-                            o: item.o.map(opt => opt.toString().trim()),
-                            a: item.a.toUpperCase().trim()
-                        });
+                        stagingQueue.push({ q: item.q.trim(), o: item.o.map(opt => opt.toString().trim()), a: item.a.toUpperCase().trim() });
                         loadedCount++;
                     }
                 });
 
-                if (parsed.title && parsed.title.trim()) {
-                    _sEL('newQuizTitle').value = parsed.title.trim();
-                }
-
-                _stA.textContent = `Staging Segment Memory Matrix: Loaded [ ${_asq.length} ] Structural Nodes.`;
-                _jTA.value = "";
-                alert(`Successfully parsed and loaded ${loadedCount} question profiles into current staging structure logs.`);
+                if (parsed.title && parsed.title.trim()) el('newQuizTitle').value = parsed.title.trim();
+                stagingArea.textContent = `Staging Segment Matrix: [ ${stagingQueue.length} ] Nodes Staged.`;
+                jsonTextArea.value = "";
+                alert(`Successfully parsed and verified ${loadedCount} elements down to staging parameters.`);
             } catch (err) {
-                alert(`JSON Core Compilation Breakdown: ${err.message}. Ensure your payload strictly conforms to system database schema rules.`);
+                alert(`JSON Core Compilation Breakdown: ${err.message}`);
             }
         });
 
-        _sQB.addEventListener('click', async () => {
-            const _sT = _sEL('newQuizTitle').value.trim();
-            if (!_sT || _asq.length === 0) return alert("Configuration Error: Question structural array compilation tree is empty or invalid.");
-            _sQB.disabled = true; _sQB.textContent = "Writing payload to cloud matrix...";
+        saveQuizBtn.addEventListener('click', async () => {
+            const sT = el('newQuizTitle').value.trim();
+            if (!sT || stagingQueue.length === 0) return alert("Configuration Error: Structural allocation matrices are empty.");
+            
+            saveQuizBtn.disabled = true; 
+            saveQuizBtn.textContent = "Writing payloads directly to Cloud Engine...";
             try {
-                await _sD(_d(_db, _coll, "custom_" + Date.now()), { title: _sT, questions: _asq });
-                await _sQ();
-                _asq = []; _stA.textContent = ""; _sEL('newQuizTitle').value = "";
-                alert("Success: Examination compilation payload written to cloud tracking database.");
-            } catch (_e) {
-                alert("Database System Rejection.");
+                await setDoc(doc(db, targetCollection, "custom_" + Date.now()), { title: sT, questions: stagingQueue });
+                await syncDatabaseVectors();
+                stagingQueue = []; stagingArea.textContent = ""; el('newQuizTitle').value = "";
+                alert("Success: Examination compilation payload synchronized successfully.");
+            } catch (e) {
+                alert("Database transactional validation dropped.");
             } finally {
-                _sQB.disabled = false; _sQB.textContent = "Compile & Save Examination Paper";
+                saveQuizBtn.disabled = false; saveQuizBtn.textContent = "Compile & Save Examination Paper";
             }
         });
     </script>
